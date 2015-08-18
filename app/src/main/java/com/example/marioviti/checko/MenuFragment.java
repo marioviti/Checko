@@ -14,6 +14,7 @@ import android.widget.Button;
 public class MenuFragment extends Fragment implements View.OnClickListener{
 
     FragmentSwapper fgSwap;
+    View view;
 
     public void onAttach (Activity activity) {
         super.onAttach(activity);
@@ -23,23 +24,28 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public View onCreateView (LayoutInflater li, ViewGroup container, Bundle si) {
-        View v = li.inflate(R.layout.menu_fragment, container, false);
-        Button btn0 = (Button) v.findViewById(R.id.frag_button_0),
-         btn1 = (Button) v.findViewById(R.id.frag_button_1),
-         btn2 = (Button) v.findViewById(R.id.frag_button_2);
+        view = li.inflate(R.layout.menu_fragment, container, false);
+        Button btn0 = (Button) view.findViewById(R.id.frag_button_0),
+         btn1 = (Button) view.findViewById(R.id.frag_button_1),
+         btn2 = (Button) view.findViewById(R.id.frag_button_2);
         btn0.setOnClickListener(this);
         btn1.setOnClickListener(this);
         btn2.setOnClickListener(this);
 
-        return v;
+        return view;
     }
 
     @Override
-    public void onClick (View v) {
-        switch(v.getId()) {
-            case R.id.frag_button_0: fgSwap.swapWith(0);
-            case R.id.frag_button_1: fgSwap.swapWith(1);
-            case R.id.frag_button_2: fgSwap.swapWith(2);
+    public void onClick(View v) {
+
+        if (v == view.findViewById(R.id.frag_button_0)) {
+            fgSwap.swapWith(0);
+        }
+        else if (v == view.findViewById(R.id.frag_button_1)) {
+            fgSwap.swapWith(1);
+        }
+        else if (v == view.findViewById(R.id.frag_button_2)) {
+            fgSwap.swapWith(2);
         }
 
     }

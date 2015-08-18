@@ -33,6 +33,8 @@ public class RootFragment extends Fragment implements FragmentSwapper {
         Fragment fg = fgtPool.getAt(pos);
         if (fg!=null) {
             FragmentTransaction fgt = getFragmentManager().beginTransaction();
+            //fgt.setCustomAnimations(R.anim.abc_slide_in_bottom,R.anim.abc_slide_out_bottom,R.anim.abc_slide_in_top,R.anim.abc_slide_out_top);
+            fgt.setCustomAnimations(R.anim.fade_in,R.anim.fade_out);
             fgt.replace(R.id.fragment_placeholder, fg);
             fgt.commit();
 

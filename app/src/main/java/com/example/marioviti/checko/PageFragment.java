@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -12,14 +13,20 @@ import android.widget.TextView;
  */
 public class PageFragment extends Fragment {
 
+    private int pos;
+    private String page;
+
     @Override
     public View onCreateView(LayoutInflater li, ViewGroup container, Bundle si) {
 
+        page = getArguments().getString("page");
+        pos = getArguments().getInt("pos");
         View v = li.inflate(R.layout.page_fragment, container, false);
 
         TextView tv = (TextView) v.findViewById(R.id.tvLabel);
-        tv.setText(getArguments().getString("page")+" "+getArguments().getInt("pos"));
+        tv.setText(pos+" "+page);
 
+        LinearLayout ly = (LinearLayout) v.findViewById(R.id.page_layout);
         return v;
     }
 
