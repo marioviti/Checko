@@ -17,11 +17,12 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     @Override
     public View onCreateView (LayoutInflater li, ViewGroup container, Bundle si) {
 
+        View v = li.inflate(R.layout.root_fragment, container, false);
         fgtPool = new FragmentPool(PAG_NUM);
-        for(int i = 0; i<PAG_NUM; i++) {
+        for(int i = 0; i<PAG_NUM; i++)
             fgtPool.inesertFragment(PageFragment.newInstance("page",i));
-        }
 
+        return v;
     }
 
     @Override
@@ -30,27 +31,33 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     }
 
     private class FragmentPool {
+
         private int curr;
         private int length;
         private Fragment[] fragArray;
 
         public FragmentPool (int lenght) {
+
             fragArray = new Fragment[lenght];
             this.length = lenght;
             curr = 0;
         }
 
         public boolean inesertFragment (Fragment f) {
+
             if(curr==length)
                 return false;
             fragArray[curr]=f;
             curr++;
+
             return true;
         }
 
         public Fragment getAt (int i) {
+
             if(i>=0 && i<length)
                 return fragArray[i];
+
             return null;
         }
     }
