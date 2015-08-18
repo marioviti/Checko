@@ -2,6 +2,7 @@ package com.example.marioviti.checko;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,45 +21,23 @@ public class RootFragment extends Fragment implements FragmentSwapper {
         View v = li.inflate(R.layout.root_fragment, container, false);
         fgtPool = new FragmentPool(PAG_NUM);
         for(int i = 0; i<PAG_NUM; i++)
-            fgtPool.inesertFragment(PageFragment.newInstance("page",i));
+            fgtPool.insertFragment(PageFragment.newInstance("page",i));
+        swapWith(0);
 
         return v;
     }
 
     @Override
-    public boolean swapWith (int pos) {
-        return false;
-    }
+    public boolean swapWith(int pos) {
 
-    private class FragmentPool {
-
-        private int curr;
-        private int length;
-        private Fragment[] fragArray;
-
-        public FragmentPool (int lenght) {
-
-            fragArray = new Fragment[lenght];
-            this.length = lenght;
-            curr = 0;
-        }
-
-        public boolean inesertFragment (Fragment f) {
-
-            if(curr==length)
-                return false;
-            fragArray[curr]=f;
-            curr++;
+        Fragment fg = fgtPool.getAt(pos);
+        if (fg!=null) {
+            FragmentTransaction fgt = getFragmentManager().beginTransaction();
+            fgt.replace(R.id.fragment_placeholder, fg);
+            fgt.commit();
 
             return true;
         }
-
-        public Fragment getAt (int i) {
-
-            if(i>=0 && i<length)
-                return fragArray[i];
-
-            return null;
-        }
+        return false;
     }
 }
