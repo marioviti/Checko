@@ -35,15 +35,14 @@ public class CircularIndicator extends View {
 
     @Override
     protected void onDraw( Canvas canvas ) {
-        super.onDraw(canvas);
 
-        Log.d("CALL","-------------------onDraw");
+        super.onDraw(canvas);
         rect = new RectF( strokeWidth, strokeWidth, dimensionsW - strokeWidth , dimensionsH - strokeWidth);
         canvas.drawArc( rect, START_ANGLE_POINT, angle, false, paint );
     }
 
     protected void onMeasure( int widthMeasureSpec, int heightMeasureSpec ) {
-        Log.d("CALL","-------------------onMeasure");
+
         dimensionsW = getDefaultSize( getSuggestedMinimumWidth(), widthMeasureSpec );
         dimensionsH = getDefaultSize( getSuggestedMinimumHeight(), heightMeasureSpec );
         setMeasuredDimension( dimensionsW, dimensionsH );

@@ -2,6 +2,7 @@ package com.example.marioviti.checko;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +22,16 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
     private CircularIndicator c;
     private CircularIndicatorAnimation ca;
 
+    public void onCreate(Bundle si) {
+        super.onCreate(si);
+        Log.d("onCreate", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
+    }
+
     @Override
     public View onCreateView(LayoutInflater li, ViewGroup container, Bundle si) {
 
-        page = getArguments().getString("page");
-        pos = getArguments().getInt("pos");
+        //page = getArguments().getString("page");
+        //pos = getArguments().getInt("pos");
         View v = li.inflate(R.layout.page_fragment0, container, false);
         TextView tv = (TextView) v.findViewById(R.id.tvLabel);
         tv.setText(pos + " " + page);
@@ -35,6 +41,12 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         ca.setDuration(4000);
 
         return v;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("onDestroy", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
     }
 
     // metodo custom statico per l'instanziazione del Fragment, metodo di cui non capisco il fine se non oberare

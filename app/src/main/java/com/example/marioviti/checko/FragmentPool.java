@@ -35,4 +35,15 @@ public class FragmentPool {
 
         return null;
     }
+
+    public boolean insertFragmentAt (Fragment f, int i) {
+
+        if(i>=0 && i<length) {
+            fragArray[i]=f;
+            return true;
+        }
+        return false;
+    }
+
+
 }
