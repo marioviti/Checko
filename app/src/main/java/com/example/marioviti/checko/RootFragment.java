@@ -35,7 +35,6 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     @Override
     public void onCreate(Bundle si) {
         super.onCreate(si);
-        initiatePool();
         Log.d("onCreate", "---------------------------ROOT_FRAGMENT");
     }
 
@@ -43,6 +42,7 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     public View onCreateView (LayoutInflater li, ViewGroup container, Bundle si) {
 
         View v = li.inflate(R.layout.root_fragment, container, false);
+        initiatePool();
         this.swapWith(0);
 
         return v;

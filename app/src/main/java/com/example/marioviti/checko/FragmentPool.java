@@ -36,13 +36,13 @@ public class FragmentPool {
         return null;
     }
 
-    public boolean insertFragmentAt (Fragment f, int i) {
+    public Fragment insertFragmentAtandReturn (Fragment f, int i) {
 
         if(i>=0 && i<length) {
             fragArray[i]=f;
-            return true;
+            return f;
         }
-        return false;
+        return null;
     }
 
 

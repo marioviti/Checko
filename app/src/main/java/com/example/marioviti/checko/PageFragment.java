@@ -30,8 +30,8 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
     @Override
     public View onCreateView(LayoutInflater li, ViewGroup container, Bundle si) {
 
-        //page = getArguments().getString("page");
-        //pos = getArguments().getInt("pos");
+        page = getArguments().getString("page");
+        pos = getArguments().getInt("pos");
         View v = li.inflate(R.layout.page_fragment0, container, false);
         TextView tv = (TextView) v.findViewById(R.id.tvLabel);
         tv.setText(pos + " " + page);

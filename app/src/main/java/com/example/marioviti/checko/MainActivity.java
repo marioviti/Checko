@@ -16,10 +16,10 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity implements FragmentSwapper, OnTopDialogLauncher{
 
     private ViewPager viewPager;
-    private final int MENU_FRAG = 0;
-    private final int ROOT_FRAG = 1;
-    private MenuFragment menuFragment;
-    private RootFragment rootFragmnet;
+    private static final int MENU_FRAG = 0;
+    private static final int ROOT_FRAG = 1;
+    private static int PAG_NUM = 2;
+    private static FragmentPool fgtPool;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +27,8 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initiatePool();
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-
         FragmentManager fm = getSupportFragmentManager();
         PagerAdapter adapterViewPager = new MyFragmentPagerAdapter(fm);
         viewPager.setAdapter(adapterViewPager);
@@ -42,16 +42,24 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         Log.d("onDestroy", "---------------------------MAIN_ACTIVITY");
     }
 
+    private static void initiatePool() {
+
+        fgtPool = new FragmentPool(PAG_NUM);
+        fgtPool.insertFragment(MenuFragment.newInstance("menu_fragment", MENU_FRAG ));
+        fgtPool.insertFragment(RootFragment.newInstance("root_fragment", ROOT_FRAG ));
+
+    }
+
     /*
     Sistema di interfacciamento per Fragment annidati: La MainActivity riflette la chiamata al RootFragment.
     */
     @Override
     public boolean swapWith(int pos) {
         viewPager.setCurrentItem(ROOT_FRAG);
-        if(rootFragmnet==null) {
-            rootFragmnet = RootFragment.newInstance( "root_fragment", ROOT_FRAG );
+        if(fgtPool.getAt(ROOT_FRAG)==null) {
+            return ((FragmentSwapper)fgtPool.insertFragmentAtandReturn(RootFragment.newInstance("root_fragment", ROOT_FRAG), ROOT_FRAG)).swapWith(pos);
         }
-        return ((FragmentSwapper)(rootFragmnet)).swapWith(pos);
+        return ((FragmentSwapper)(fgtPool.getAt(ROOT_FRAG))).swapWith(pos);
     }
 
     @Override
@@ -66,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
     public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
-        private int fragmentCount = 2;
+        private int fragmentCount = PAG_NUM;
 
         public MyFragmentPagerAdapter ( FragmentManager fm ) {
             super(fm);
@@ -74,18 +82,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
         @Override
         public Fragment getItem(int pos) {
-            switch (pos) {
-                case MENU_FRAG: {
-                    menuFragment = MenuFragment.newInstance( "menu_fragment", MENU_FRAG );
-                    return menuFragment;
-                }
-                case ROOT_FRAG: {
-                    rootFragmnet = RootFragment.newInstance( "root_fragment", ROOT_FRAG );
-                    return rootFragmnet;
-                }
-                default:
-                    return null;
-            }
+            return fgtPool.getAt(pos);
         }
 
         public int getItemPosition (Object object) {
