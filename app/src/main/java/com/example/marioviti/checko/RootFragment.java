@@ -6,10 +6,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 /**
  * Created by marioviti on 18/08/15.
  */
+
 public class RootFragment extends Fragment implements FragmentSwapper {
 
     private FragmentPool fgtPool;
@@ -27,15 +30,15 @@ public class RootFragment extends Fragment implements FragmentSwapper {
         return v;
     }
 
+    /*
+    Sistema di interfacciamento per Fragment annidati: il RootFragment ritiene i Fragment
+    gestisce le transazioni FragmentTransaction dinamiche
+    */
     @Override
-    public boolean swapWith(int pos) {
-
+    public boolean swapWith( int pos ) {
         Fragment fg = fgtPool.getAt(pos);
         if (fg!=null) {
             FragmentTransaction fgt = getFragmentManager().beginTransaction();
-            //fgt.setCustomAnimations(R.anim.abc_slide_in_bottom,R.anim.abc_slide_out_bottom,R.anim.abc_slide_in_top,R.anim.abc_slide_out_top);
-            //fgt.setCustomAnimations(R.anim.fade_in,R.anim.fade_out);
-            fgt.setCustomAnimations(R.anim.flip_in,R.anim.flip_out);
             fgt.replace(R.id.fragment_placeholder, fg);
             fgt.commit();
 

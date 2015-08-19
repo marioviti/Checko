@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper{
         viewPager.setAdapter(adapterViewPager);
     }
 
+    /*
+    Sistema di interfacciamento per Fragment annidati: La MainActivity riflette la chiamata al RootFragment.
+    */
     @Override
     public boolean swapWith(int pos) {
         viewPager.setCurrentItem(ROOT_FRAG);

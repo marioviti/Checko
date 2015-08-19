@@ -5,38 +5,41 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
  * Created by marioviti on 18/08/15.
  */
-public class PageFragment extends Fragment {
+
+public class PageFragment extends Fragment implements Animation.AnimationListener{
 
     private int pos;
     private String page;
+    private CircularIndicator c;
+    private CircularIndicatorAnimation ca;
 
     @Override
     public View onCreateView(LayoutInflater li, ViewGroup container, Bundle si) {
 
         page = getArguments().getString("page");
         pos = getArguments().getInt("pos");
-        View v = null;
-        if(pos == 0)
-            v = li.inflate(R.layout.page_fragment0, container, false);
-        else if (pos == 1)
-            v = li.inflate(R.layout.page_fragment1, container, false);
-        else if (pos == 2)
-            v = li.inflate(R.layout.page_fragment2, container, false);
+        View v = li.inflate(R.layout.page_fragment0, container, false);
+        TextView tv = (TextView) v.findViewById(R.id.tvLabel);
+        tv.setText(pos + " " + page);
 
-        if(v!=null) {
-            TextView tv = (TextView) v.findViewById(R.id.tvLabel);
-            tv.setText(pos + " " + page);
-        }
+        c = (CircularIndicator) v.findViewById(R.id.circular_indicator);
+        ca = new CircularIndicatorAnimation(c,240);
+        ca.setDuration(4000);
 
         return v;
     }
 
+    // metodo custom statico per l'instanziazione del Fragment, metodo di cui non capisco il fine se non oberare
+    // Il garbage collector e la heap con un Bundle quando c'è lo scope delle variabili di istanza, ma lo lascio perchè
+    // sono un iniziato (pivello) e quindi mi fido della comunity. In più per indirizzare c'è l'overhead dell'hashing... vabbè.
     public static PageFragment newInstance(String page, int pos) {
 
         Bundle args = new Bundle();
@@ -46,5 +49,34 @@ public class PageFragment extends Fragment {
         ff.setArguments(args);
 
         return ff;
+    }
+
+    // Animazioni transizioni su transazioni Fragments
+    @Override
+    public Animation onCreateAnimation( int transit, boolean enter, int nextAnim ) {
+        Animation anim;
+        if (enter) {
+            anim = AnimationUtils.loadAnimation(getActivity(), R.anim.flip_in);
+        } else {
+            anim = AnimationUtils.loadAnimation(getActivity(), R.anim.flip_out);
+        }
+
+        anim.setAnimationListener(this);
+        return anim;
+    }
+
+    @Override
+    public void onAnimationStart(Animation animation) {
+
+    }
+
+    @Override
+    public void onAnimationEnd(Animation animation) {
+        c.startAnimation(ca);
+    }
+
+    @Override
+    public void onAnimationRepeat(Animation animation) {
+
     }
 }

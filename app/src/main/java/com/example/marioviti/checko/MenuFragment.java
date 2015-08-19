@@ -11,7 +11,8 @@ import android.widget.Button;
 /**
  * Created by marioviti on 18/08/15.
  */
-public class MenuFragment extends Fragment implements View.OnClickListener{
+
+public class MenuFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener{
 
     FragmentSwapper fgSwap;
     View view;
@@ -29,8 +30,11 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
          btn1 = (Button) view.findViewById(R.id.frag_button_1),
          btn2 = (Button) view.findViewById(R.id.frag_button_2);
         btn0.setOnClickListener(this);
+        btn0.setOnLongClickListener(this);
         btn1.setOnClickListener(this);
+        btn1.setOnLongClickListener(this);
         btn2.setOnClickListener(this);
+        btn2.setOnLongClickListener(this);
 
         return view;
     }
@@ -48,5 +52,10 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
             fgSwap.swapWith(2);
         }
 
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        return false;
     }
 }
