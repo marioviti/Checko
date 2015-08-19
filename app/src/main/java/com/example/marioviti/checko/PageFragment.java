@@ -21,12 +21,19 @@ public class PageFragment extends Fragment {
 
         page = getArguments().getString("page");
         pos = getArguments().getInt("pos");
-        View v = li.inflate(R.layout.page_fragment, container, false);
+        View v = null;
+        if(pos == 0)
+            v = li.inflate(R.layout.page_fragment0, container, false);
+        else if (pos == 1)
+            v = li.inflate(R.layout.page_fragment1, container, false);
+        else if (pos == 2)
+            v = li.inflate(R.layout.page_fragment2, container, false);
 
-        TextView tv = (TextView) v.findViewById(R.id.tvLabel);
-        tv.setText(pos+" "+page);
+        if(v!=null) {
+            TextView tv = (TextView) v.findViewById(R.id.tvLabel);
+            tv.setText(pos + " " + page);
+        }
 
-        LinearLayout ly = (LinearLayout) v.findViewById(R.id.page_layout);
         return v;
     }
 
