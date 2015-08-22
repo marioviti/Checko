@@ -1,4 +1,4 @@
-package com.example.marioviti.checko;
+package customView;
 
 import android.view.animation.Animation;
 import android.view.animation.Transformation;

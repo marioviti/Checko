@@ -8,8 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import customView.CircularIndicator;
+import customView.CircularIndicatorAnimation;
 
 /**
  * Created by marioviti on 18/08/15.

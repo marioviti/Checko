@@ -1,4 +1,4 @@
-package com.example.marioviti.checko;
+package customView;
 
 import android.content.Context;
 import android.graphics.Canvas;

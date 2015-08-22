@@ -83,6 +83,7 @@ public class RootFragment extends Fragment implements FragmentSwapper {
         if (fg != null) {
             fgt = fm.beginTransaction();
             fgt.replace(R.id.fragment_placeholder, fg);
+            fgt.addToBackStack(null);
             fgt.commit();
 
             return true;
