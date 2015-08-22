@@ -1,5 +1,6 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
@@ -11,10 +12,22 @@
         android:padding="10dp"
         android:text="welcome" />
 
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:hint="insert GTIN"
+        android:ems="10"
+        android:id="@+id/dialog_editText"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/dialog_text_view"
+        android:layout_toStartOf="@+id/dialog_text_view" />
+
     <Button
         android:id="@+id/dialog_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="connect"/>
 
-</RelativeLayout>
+</LinearLayout>
