@@ -1,6 +1,7 @@
 package labelAPI;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Locale;
 
 /**
  * Created by marioviti on 22/08/15.
@@ -32,6 +34,8 @@ public class LabelAPIHttpReq  extends AsyncTask<String,String,JSONObject> {
     }
 
     JSONObject elaborateReq(URL url) {
+
+        Log.d("LabelAPIHttpReq", "------------------------------URL: "+ url.toString());
 
         InputStream is = null;
         JSONObject jsonObject = null;

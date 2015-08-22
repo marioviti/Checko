@@ -14,12 +14,16 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
+
 import labelAPI.LabelAPIRouter;
+import labelAPI.LabelAPIServiceCallbacks;
 import labelAPI.LabelAPIprotocol;
 
-public class MainActivity extends AppCompatActivity implements FragmentSwapper, OnTopDialogLauncher, View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements FragmentSwapper, OnTopDialogLauncher, View.OnClickListener, LabelAPIServiceCallbacks{
 
     private ViewPager viewPager;
     private static final int MENU_FRAG = 0;
@@ -27,9 +31,11 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     private static int PAG_NUM = 2;
     private static FragmentPool fgtPool;
     private LabelAPIRouter labelAPIroute;
+    private Dialog mainDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -39,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         }
 
         //CONNECTION SESSION
-        labelAPIroute= new LabelAPIRouter("mc896havn4wp7rf73yu5sxxs");
+        labelAPIroute= new LabelAPIRouter(this,"mc896havn4wp7rf73yu5sxxs");
+        mainDialog = new Dialog(MainActivity.this);
 
         // FRAGMENT SESSION
         initiatePool();
@@ -52,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     }
 
     private static void initiatePool() {
+
         fgtPool = new FragmentPool(PAG_NUM);
         fgtPool.insertFragment(MenuFragment.newInstance("menu_fragment", MENU_FRAG ));
         fgtPool.insertFragment(RootFragment.newInstance("root_fragment", ROOT_FRAG ));
@@ -59,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+
         super.onConfigurationChanged(newConfig);
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -70,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
     @Override
     protected void onSaveInstanceState (Bundle savedInstanceState) {
+
         super.onSaveInstanceState(savedInstanceState);
         if (savedInstanceState.getBoolean("first_start_config"))
             savedInstanceState.putBoolean("first_start_config",false);
@@ -78,13 +88,15 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
     @Override
     public void onDestroy() {
+
         super.onDestroy();
         Log.d("onDestroy", "---------------------------MAIN_ACTIVITY");
     }
 
-    // INTERFACCIAMENTO: gestione fragments annidiati: swap fragment callback
+    // FragmentSwapper: gestione fragments annidiati: swap fragment callback
     @Override
     public boolean swapWith(int pos) {
+
         viewPager.setCurrentItem(ROOT_FRAG);
         if(fgtPool.getAt(ROOT_FRAG)==null) {
             return ((FragmentSwapper)fgtPool.insertFragmentAtandReturn(RootFragment.newInstance("root_fragment", ROOT_FRAG), ROOT_FRAG)).swapWith(pos);
@@ -92,28 +104,56 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         return ((FragmentSwapper)(fgtPool.getAt(ROOT_FRAG))).swapWith(pos);
     }
 
-    // INTERFACCIAMENTO: gestione fragments annidiati: callback per visualizzazione dialog onTop
+    // OnTopDialogLauncher: gestione fragments annidiati: callback per visualizzazione dialog onTop
     @Override
     public void lauchDialog() {
-        Dialog dialog = new Dialog(MainActivity.this);
-        dialog.setTitle("Dialog Title");
-        dialog.setContentView(R.layout.dialog_view);
-        TextView text = (TextView) dialog.findViewById(R.id.dialog_text_view);
+
+        if (!labelAPIroute.hasSessionStarted())
+            labelAPIroute.startTask(LabelAPIprotocol.SESSION_CREATE_REQ);
+
+        this.mainDialog.setTitle("Dialog Title");
+        this.mainDialog.setContentView(R.layout.dialog_view);
+        TextView text = (TextView)  this.mainDialog.findViewById(R.id.dialog_text_view);
         text.setText("This is the text in my dialog");
-        Button btn = (Button) dialog.findViewById(R.id.dialog_button);
+        Button btn = (Button)  this.mainDialog.findViewById(R.id.dialog_button);
         btn.setOnClickListener(this);
-        dialog.show();
+        this.mainDialog.show();
     }
 
     // INTERFACCIAMENTO: listener per bottone del dialog
     @Override
     public void onClick(View v) {
+
         switch (v.getId()) {
             case(R.id.dialog_button) : {
-                labelAPIroute.startTask(LabelAPIprotocol.SESSION_CREATE_REQ);
+
+                String GTIN = ((EditText) this.mainDialog.findViewById(R.id.dialog_editText)).getText().toString();
+                labelAPIroute.createSessionArrayURL(GTIN);
+                //016000264601
+                labelAPIroute.startTask(LabelAPIprotocol.SESSION_ARRAY_REQ);
                 break;
             }
         }
+    }
+
+    // LabelAPIServiceCallbacks
+    @Override
+    public void onReceivedNullResponse() {
+
+        TextView text = (TextView) this.mainDialog.findViewById(R.id.dialog_text_view);
+        if(text!=null)
+            text.setText("Il codice inserito non è stato trovato, prova un'altro");
+
+    }
+
+    @Override
+    public void onSessionExpired() {
+
+    }
+
+    @Override
+    public void onHttpConnectionError() {
+
     }
 
     // CLASSE PRIVATA: gestione dei fragment ritenuti dall'activity
