@@ -12,7 +12,7 @@ import java.net.URL;
 
 import databaseHandling.DBOpenHelper;
 import databaseHandling.DBQueryManager;
-import databaseHandling.DBTransactionTask;
+import databaseHandling.DBTransactionTasko;
 
 /**
  *
@@ -58,7 +58,7 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
 
     public void startHttpTask (int task) { new LabelAPIHttpTask( current_url, this, task ).execute(); }
 
-    public void startDBTask (ContentValues values, int task) { new DBTransactionTask( this, this.dbOpener, task ).execute(values); }
+    public void startDBTask (ContentValues values, int task) { new DBTransactionTasko( this, this.dbOpener, task ).execute(values); }
 
     public boolean hasSessionStarted() {
         return sessionHasStarted;
