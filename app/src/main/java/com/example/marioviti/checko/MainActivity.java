@@ -1,7 +1,6 @@
 package com.example.marioviti.checko;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,12 +16,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.lang.ref.WeakReference;
-
 import databaseHandling.DBOpenHelper;
 import labelAPI.LabelAPIRouter;
 import labelAPI.LabelAPIServiceCallbacks;
-import labelAPI.LabelAPIprotocol;
+import labelAPI.LabelAPIProtocol;
 
 public class MainActivity extends AppCompatActivity implements FragmentSwapper, OnTopDialogLauncher, View.OnClickListener, LabelAPIServiceCallbacks{
 
@@ -123,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     public void lauchDialog() {
 
         if (!labelAPIroute.hasSessionStarted())
-            labelAPIroute.startHttpTask(LabelAPIprotocol.SESSION_CREATE_REQ);
+            labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
 
         this.mainDialog.setTitle("Dialog Title");
         this.mainDialog.setContentView(R.layout.dialog_view);
@@ -143,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
                 String GTIN = ((EditText) this.mainDialog.findViewById(R.id.dialog_editText)).getText().toString();
                 labelAPIroute.createSessionArrayURL(GTIN);
-                labelAPIroute.startHttpTask(LabelAPIprotocol.SESSION_ARRAY_REQ);
+                labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_ARRAY_REQ);
                 break;
             }
         }
@@ -163,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     public void onSessionExpired() {
 
         labelAPIroute.sessionHasStarted=false;
-        labelAPIroute.startHttpTask(LabelAPIprotocol.SESSION_CREATE_REQ);
+        labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
     }
 
     @Override
