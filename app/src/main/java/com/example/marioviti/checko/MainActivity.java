@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
+import databaseHandling.DBOpenHelper;
 import labelAPI.LabelAPIRouter;
 import labelAPI.LabelAPIServiceCallbacks;
 import labelAPI.LabelAPIprotocol;
@@ -28,7 +29,8 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     private ViewPager viewPager;
     private static final int MENU_FRAG = 0;
     private static final int ROOT_FRAG = 1;
-    private static int PAG_NUM = 2;
+    private static final int CALEDAR_FRAG = 2;
+    private static int PAG_NUM = 3;
     private static FragmentPool fgtPool;
     private LabelAPIRouter labelAPIroute;
     private Dialog mainDialog;
@@ -44,16 +46,27 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
             Log.d("onCreate", "---------------------------METRICS: "+metrics.toString());
         }
 
+        //ROUTER SESSION
+
+        //INITIATE DB
+        DBOpenHelper  myOpenHelper = new DBOpenHelper (MainActivity.this, DBOpenHelper.DB_NAME, null, DBOpenHelper.DB_V);
+        myOpenHelper.onCreate( myOpenHelper.getWritableDatabase());
+
         //CONNECTION SESSION
-        labelAPIroute= new LabelAPIRouter(this,"mc896havn4wp7rf73yu5sxxs");
+        labelAPIroute= new LabelAPIRouter(this,myOpenHelper,"mc896havn4wp7rf73yu5sxxs");
         mainDialog = new Dialog(MainActivity.this);
 
-        // FRAGMENT SESSION
+        //!ROUTER SESSION
+
+        //FRAGMENT SESSION
+
         initiatePool();
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         FragmentManager fm = getSupportFragmentManager();
         PagerAdapter adapterViewPager = new MyFragmentPagerAdapter(fm);
         viewPager.setAdapter(adapterViewPager);
+
+        //!FRAGMENT SESSION
 
         Log.d("onCreate", "---------------------------MAIN_ACTIVITY");
     }
@@ -63,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         fgtPool = new FragmentPool(PAG_NUM);
         fgtPool.insertFragment(MenuFragment.newInstance("menu_fragment", MENU_FRAG ));
         fgtPool.insertFragment(RootFragment.newInstance("root_fragment", ROOT_FRAG ));
+        fgtPool.insertFragment(CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG ));
     }
 
     @Override
@@ -109,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     public void lauchDialog() {
 
         if (!labelAPIroute.hasSessionStarted())
-            labelAPIroute.startTask(LabelAPIprotocol.SESSION_CREATE_REQ);
+            labelAPIroute.startHttpTask(LabelAPIprotocol.SESSION_CREATE_REQ);
 
         this.mainDialog.setTitle("Dialog Title");
         this.mainDialog.setContentView(R.layout.dialog_view);
@@ -129,8 +143,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
                 String GTIN = ((EditText) this.mainDialog.findViewById(R.id.dialog_editText)).getText().toString();
                 labelAPIroute.createSessionArrayURL(GTIN);
-                //016000264601
-                labelAPIroute.startTask(LabelAPIprotocol.SESSION_ARRAY_REQ);
+                labelAPIroute.startHttpTask(LabelAPIprotocol.SESSION_ARRAY_REQ);
                 break;
             }
         }
@@ -142,18 +155,23 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
         TextView text = (TextView) this.mainDialog.findViewById(R.id.dialog_text_view);
         if(text!=null)
-            text.setText("Il codice inserito non è stato trovato, prova un'altro");
+            text.setText("Codice non valido, prova un'altro");
 
     }
 
     @Override
     public void onSessionExpired() {
 
+        labelAPIroute.sessionHasStarted=false;
+        labelAPIroute.startHttpTask(LabelAPIprotocol.SESSION_CREATE_REQ);
     }
 
     @Override
     public void onHttpConnectionError() {
 
+        TextView text = (TextView) this.mainDialog.findViewById(R.id.dialog_text_view);
+        if(text!=null)
+            text.setText("Errore Connessione, connessione non presente");
     }
 
     // CLASSE PRIVATA: gestione dei fragment ritenuti dall'activity

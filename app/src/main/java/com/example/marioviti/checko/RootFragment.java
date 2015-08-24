@@ -50,7 +50,6 @@ public class RootFragment extends Fragment implements FragmentSwapper {
 
     public static RootFragment newInstance(String page, int pos) {
 
-
         Bundle args = new Bundle();
         args.putString("page", page);
         args.putInt("pos", pos);

@@ -10,21 +10,25 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBOpenHelper extends SQLiteOpenHelper {
 
-    public static String DB_NAME = "LabelApiDatabase.db";
-    public static String DB_TABLE = "prodotto";
-    public static String COL_PK = "_ID";
-    public static String COL_UPC =  "upc";
-    public static String COL_NAME = "product_name";
-    public static String COL_DATE = "_DATE";
-    public static String COL_CARB = "Total Carbohydrate";
-    public static String COL_PROT = "Protein";
-    public static String COL_FAT = "Total Fat";
-    public static String COL_CAL = "Calories";
+    public static final String DB_NAME = "LabelApiDatabaseV1.db";
+    public static int DB_V = 1;
+    public static final String DB_TABLE = "products";
+    public static final  String COL_PK = "c_id";
+    public static final String COL_TYPE = "c_type";
+    public static final String COL_UPC = "upc";
+    public static final String COL_NAME = "product_name";
+    public static final String COL_DATE = "c_date";
+    public static final String COL_CARB = "Total_Carbohydrate";
+    public static final String COL_PROT = "Protein";
+    public static final String COL_FAT = "Total_Fat";
+    public static final String COL_CAL = "Calories";
 
-
+    private String DATABASE_DELETE = "DROP TABLE IF EXISTS " + DB_TABLE + " ;";
     private String DATABASE_CREATE =  "CREATE TABLE " + DB_TABLE +
-            " (" + COL_PK + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            " (" +
+            COL_PK + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COL_UPC + " TEXT NOT NULL, " +
+            COL_TYPE + " TEXT NOT NULL, " +
             COL_NAME + " TEXT, " +
             COL_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP, " +
             COL_CARB + " FLOAT, " +
@@ -38,7 +42,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-            db.execSQL(DATABASE_CREATE);
+        db.execSQL(DATABASE_DELETE);
+        db.execSQL(DATABASE_CREATE);
     }
 
     @Override
