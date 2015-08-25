@@ -13,9 +13,6 @@ import android.widget.TextView;
 import customView.CircularIndicator;
 import customView.CircularIndicatorAnimation;
 
-/**
- * Created by marioviti on 18/08/15.
- */
 
 public class PageFragment extends Fragment implements Animation.AnimationListener{
 
@@ -26,7 +23,7 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
 
     public void onCreate(Bundle si) {
         super.onCreate(si);
-        Log.d("onCreate", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
+        //Log.d("onCreate", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
     }
 
     @Override
@@ -48,12 +45,10 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("onDestroy", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
+        //Log.d("onDestroy", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
     }
 
-    // metodo custom statico per l'instanziazione del Fragment, metodo di cui non capisco il fine se non oberare
-    // Il garbage collector e la heap con un Bundle quando c'è lo scope delle variabili di istanza, ma lo lascio perchè
-    // sono un iniziato (pivello) e quindi mi fido della comunity. In più per indirizzare c'è l'overhead dell'hashing... vabbè.
+
     public static PageFragment newInstance(String page, int pos) {
 
         Bundle args = new Bundle();
@@ -80,9 +75,7 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
     }
 
     @Override
-    public void onAnimationStart(Animation animation) {
-
-    }
+    public void onAnimationStart(Animation animation) {}
 
     @Override
     public void onAnimationEnd(Animation animation) {
@@ -90,7 +83,5 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
     }
 
     @Override
-    public void onAnimationRepeat(Animation animation) {
-
-    }
+    public void onAnimationRepeat(Animation animation) {}
 }

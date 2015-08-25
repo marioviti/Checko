@@ -15,10 +15,17 @@ import android.widget.Button;
 
 public class MenuFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener{
 
-    FragmentSwapper fgSwap;
-    OnTopDialogLauncher oTlauncher;
-    View view;
+    private FragmentSwapper fgSwap;
+    private OnTopDialogLauncher oTlauncher;
+    private View view;
 
+    @Override
+    public void onCreate(Bundle si) {
+        super.onCreate(si);
+        Log.d("onCreate", "---------------------------MENU_FRAGMENT");
+    }
+
+    @Override
     public void onAttach (Activity activity) {
         super.onAttach(activity);
         fgSwap = (FragmentSwapper) activity;
@@ -26,11 +33,15 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
 
     }
 
+    @Override
     public View onCreateView (LayoutInflater li, ViewGroup container, Bundle si) {
+
+        Log.d("onCreateView", "---------------------------MENU_FRAGMENT");
+
         view = li.inflate(R.layout.menu_fragment, container, false);
         Button btn0 = (Button) view.findViewById(R.id.frag_button_0),
-         btn1 = (Button) view.findViewById(R.id.frag_button_1),
-         btn2 = (Button) view.findViewById(R.id.frag_button_2);
+            btn1 = (Button) view.findViewById(R.id.frag_button_1),
+            btn2 = (Button) view.findViewById(R.id.frag_button_2);
         btn0.setOnClickListener(this);
         btn0.setOnLongClickListener(this);
         btn1.setOnClickListener(this);
@@ -39,6 +50,12 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
         btn2.setOnLongClickListener(this);
 
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("onDestroy", "---------------------------MENU_FRAGMENT");
     }
 
     public static MenuFragment newInstance(String page, int pos) {
@@ -65,12 +82,6 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
             fgSwap.swapWith(2);
         }
 
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d("onDestroy", "---------------------------ROOT_FRAGMENT");
     }
 
     @Override

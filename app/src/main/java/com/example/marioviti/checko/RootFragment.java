@@ -25,6 +25,7 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     private static int PAG_NUM = 3;
     private static FragmentManager fm;
     private static FragmentActivity myContext;
+    private int currentFrag;
 
     public void onAttach(Activity activity) {
         myContext = (FragmentActivity) activity;
@@ -41,8 +42,12 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     @Override
     public View onCreateView (LayoutInflater li, ViewGroup container, Bundle si) {
 
+        Log.d("onCreateView", "---------------------------ROOT_FRAGMENT");
         View v = li.inflate(R.layout.root_fragment, container, false);
         initiatePool();
+        // hack: per evitare che il primo fragment non sia riconosciuto come quello corrente
+        // setto quello corrente a 1 != 0 in modo che venga settato
+        this.currentFrag=1;
         this.swapWith(0);
 
         return v;
@@ -74,20 +79,24 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     @Override
     public boolean swapWith( int pos ) {
 
-        FragmentManager fm = myContext.getSupportFragmentManager();
-        Fragment fg;
-        FragmentTransaction fgt;
+        if(this.currentFrag!=pos) {
+            FragmentManager fm = myContext.getSupportFragmentManager();
+            Fragment fg;
+            FragmentTransaction fgt;
 
-        fg = fgtPool.getAt(pos);
-        if (fg != null) {
-            fgt = fm.beginTransaction();
-            fgt.replace(R.id.fragment_placeholder, fg);
-            fgt.addToBackStack(null);
-            fgt.commit();
-
-            return true;
+            fg = fgtPool.getAt(pos);
+            if (fg != null) {
+                fgt = fm.beginTransaction();
+                fgt.replace(R.id.fragment_placeholder, fg);
+                fgt.addToBackStack(null);
+                fgt.commit();
+                this.currentFrag = pos;
+                return true;
+            }
+            return false;
         }
-        return false;
+
+        return true;
     }
 
     @Override

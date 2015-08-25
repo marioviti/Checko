@@ -104,7 +104,8 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         Log.d("onDestroy", "---------------------------MAIN_ACTIVITY");
     }
 
-    // FragmentSwapper: gestione fragments annidiati: swap fragment callback
+    // FragmentSwapper: Metodo di interfacciamento fra ROOT_FRAG e MainActiviy.
+    // La MainActiviy comprendendo il pageAdapeter può voltare le pagine mentre il ROOT fragment ne cambia il contenuto.
     @Override
     public boolean swapWith(int pos) {
 
