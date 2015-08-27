@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import Support.SupporHolder;
 import databaseHandling.DBOpenHelper;
 import labelAPI.LabelAPIRouter;
 import labelAPI.LabelAPIServiceCallbacks;
@@ -40,13 +41,13 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
         //RESTORE STATE
         if (savedInstanceState == null) {
-
+            SupporHolder.si = null;
             DisplayMetrics metrics = getResources().getDisplayMetrics();
             Log.d("onCreate", "---------------------------FIRST ACCESS METRICS: " + metrics.toString());
 
         }else {
-            DBOpenHelper.latestDay = savedInstanceState.getString("latestDay");
-            DBOpenHelper.latestDateID = savedInstanceState.getInt("latestDateID");
+            SupporHolder.latestDay = savedInstanceState.getString("latestDay");
+            SupporHolder.latestDayID = savedInstanceState.getInt("latestDateID");
         }
 
         //INITIATE DB
@@ -84,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
         super.onSaveInstanceState(savedInstanceState);
 
-        savedInstanceState.putString("latestDay", DBOpenHelper.latestDay);
-        savedInstanceState.putInt("latestDateID", DBOpenHelper.latestDateID);
+        savedInstanceState.putString("latestDay", SupporHolder.latestDay);
+        savedInstanceState.putInt("latestDateID", SupporHolder.latestDayID);
 
         Log.d("onSaveInstanceState", "---------------------------MAIN_ACTIVITY");
     }
@@ -166,10 +167,8 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     public boolean swapWith(int pos) {
 
         viewPager.setCurrentItem(ROOT_FRAG);
-
-        if(fgtPool.getAt(ROOT_FRAG)==null) {
-            return ((FragmentSwapper)fgtPool.insertFragmentAtandReturn(RootFragment.newInstance("root_fragment", ROOT_FRAG), ROOT_FRAG)).swapWith(pos);
-        }
+        if(fgtPool.getAt(ROOT_FRAG)==null)
+            fgtPool.insertFragmentAtandReturn(RootFragment.newInstance("root_fragment", ROOT_FRAG), ROOT_FRAG);
 
         return ((FragmentSwapper)(fgtPool.getAt(ROOT_FRAG))).swapWith(pos);
     }

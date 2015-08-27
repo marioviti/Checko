@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import Support.SupporHolder;
+
 /**
  * Created by marioviti on 18/08/15.
  */

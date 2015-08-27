@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.view.View;
  */
 public class CalendarRowBarView extends View {
 
+    private static Bundle calendar;
+    private static int instanceCounter = 0;
     private int dimensionsW, dimensionsH;
     private Paint[] paint;
     private float[] rec;
@@ -23,6 +26,7 @@ public class CalendarRowBarView extends View {
     public CalendarRowBarView( Context context, AttributeSet attrs ) {
 
         super(context, attrs);
+        instanceCounter++;
         SupportContentValues.incEntry();
         rec = SupportContentValues.giveValues();
         recPercent =  new float[N];

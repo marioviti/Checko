@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import Support.SupporHolder;
 import databaseHandling.DBOpenHelper;
 import databaseHandling.DBQueryManager;
 import databaseHandling.DBTransactionAsyncTask;
@@ -72,12 +73,6 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
 
     }
 
-    public void startDBTask (ContentValues values, int task) {
-
-        new DBTransactionAsyncTask( this, this.dbOpener, task ).execute(values);
-
-    }
-
     @Override
     public void manageHttpRes( JSONObject res, int resType ) {
 
@@ -100,6 +95,43 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private ContentValues fillValues (JSONObject product) {
+
+        ContentValues values = null;
+        try {
+            values = new ContentValues();
+            JSONArray nutrients = (JSONArray) product.get("nutrients");
+            values.put(DBOpenHelper.PROD_COL_UPC, product.getString("upc"));
+            values.put(DBOpenHelper.PROD_COL_NAME, product.getString("product_name"));
+            values.put(DBOpenHelper.PROD_COL_TYPE, SupporHolder.globalTypeVariable);
+            String nutrient_name;
+            for (int i = 0; i < nutrients.length(); i++) {
+                nutrient_name = (((JSONObject)nutrients.get(i)).getString("nutrient_name"));
+                switch (nutrient_name) {
+                    case "Calories":{
+                        values.put(DBOpenHelper.PROD_COL_CAL,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
+                        break;
+                    }
+                    case "Protein":{
+                        values.put(DBOpenHelper.PROD_COL_PROT,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
+                        break;
+                    }
+                    case "Total Carbohydrate":{
+                        values.put(DBOpenHelper.PROD_COL_CARB,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
+                        break;
+                    }
+                    case "Total Fat":{
+                        values.put(DBOpenHelper.PROD_COL_FAT,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
+                        break;
+                    }
+                }
+            }
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return values;
     }
 
     private void switchResTask (JSONObject res, int resType) {
@@ -134,48 +166,17 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
         }
     }
 
-    private ContentValues fillValues (JSONObject product) {
+    public void startDBTask (ContentValues values, int task) {
 
-        ContentValues values = null;
-        try {
-            values = new ContentValues();
-            JSONArray nutrients = (JSONArray) product.get("nutrients");
-            values.put(DBOpenHelper.PROD_COL_UPC, product.getString("upc"));
-            values.put(DBOpenHelper.PROD_COL_NAME, product.getString("product_name"));
-            values.put(DBOpenHelper.PROD_COL_TYPE, DBOpenHelper.CAL_COL_TYPE1);
-            String nutrient_name;
-            for (int i = 0; i < nutrients.length(); i++) {
-                nutrient_name = (((JSONObject)nutrients.get(i)).getString("nutrient_name"));
-                switch (nutrient_name) {
-                    case "Calories":{
-                        values.put(DBOpenHelper.PROD_COL_CAL,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
-                        break;
-                    }
-                    case "Protein":{
-                        values.put(DBOpenHelper.PROD_COL_PROT,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
-                        break;
-                    }
-                    case "Total Carbohydrate":{
-                        values.put(DBOpenHelper.PROD_COL_CARB,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
-                        break;
-                    }
-                    case "Total Fat":{
-                        values.put(DBOpenHelper.PROD_COL_FAT,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
-                        break;
-                    }
-                }
-            }
-        }catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return values;
+        new DBTransactionAsyncTask( this, this.dbOpener, task ).execute(values);
+
     }
 
     @Override
     public void manageQueryRes(ContentValues res, int task) {
-        /*
+
         if(task == DBQueryManager.INSERT)
             startDBTask(null,DBQueryManager.FETCH);
-        */
+
     }
 }

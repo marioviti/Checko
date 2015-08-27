@@ -10,6 +10,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import Support.SupporHolder;
 import customView.CircularIndicator;
 import customView.CircularIndicatorAnimation;
 
@@ -56,9 +57,31 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
             }
         }
 
-
         TextView tv = (TextView) v.findViewById(R.id.tvLabel);
         tv.setText(pos + " " + page);
+        float[] values = null;
+        String key = SupporHolder.summaryKey(SupporHolder.currentDayID, pos);
+        if(SupporHolder.summaryCalendarCache.containsKey(key)){
+            values = SupporHolder.summaryCalendarCache.get(key);
+        }
+
+        TextView tvCARB = (TextView) v.findViewById(R.id.text_CARB);
+        TextView tvPROT = (TextView) v.findViewById(R.id.text_PROT);
+        TextView tvFAT = (TextView) v.findViewById(R.id.text_FAT);
+        TextView tvCAL = (TextView) v.findViewById(R.id.text_CAL);
+        if(values!=null) {
+            tvCARB.setText(values[0] + "");
+            tvPROT.setText(values[1] + "");
+            tvFAT.setText(values[2] + "");
+            tvCAL.setText(values[3] + "");
+        }
+
+        /*
+        TextView tvCARB = (TextView) v.findViewById(R.id.page_text_CARB);
+        TextView tvPROT = (TextView) v.findViewById(R.id.page_text_PROT);
+        TextView tvFAT = (TextView) v.findViewById(R.id.page_text_FAT);
+        TextView tvCAL = (TextView) v.findViewById(R.id.page_text_CAL);
+        */
 
         c = (CircularIndicator) v.findViewById(R.id.circular_indicator);
         ca = new CircularIndicatorAnimation(c,240);
@@ -72,7 +95,6 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         super.onDestroy();
         //Log.d("onDestroy", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
     }
-
 
     public static PageFragment newInstance(String page, int pos) {
 

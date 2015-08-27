@@ -9,6 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import Support.SupporHolder;
+import databaseHandling.DBOpenHelper;
+
 /**
  * Created by marioviti on 18/08/15.
  */
@@ -82,26 +85,27 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
         int vID = v.getId();
         switch (vID) {
             case R.id.frag_button_0: {
+                SupporHolder.globalTypeVariable = 0;
                 fgSwap.swapWith(0);
                 break;
             }
-
             case  R.id.frag_button_1: {
+                SupporHolder.globalTypeVariable = 1;
                 fgSwap.swapWith(1);
                 break;
             }
-
             case  R.id.frag_button_2: {
+                SupporHolder.globalTypeVariable = 2;
                 fgSwap.swapWith(2);
                 break;
             }
-
             case  R.id.frag_button_3: {
+                SupporHolder.globalTypeVariable = 3;
                 fgSwap.swapWith(3);
                 break;
             }
-
             case  R.id.frag_button_4: {
+                SupporHolder.globalTypeVariable = 4;
                 fgSwap.swapWith(4);
                 break;
             }
@@ -110,7 +114,35 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
 
     @Override
     public boolean onLongClick(View v) {
+        switch (v.getId()) {
+            case R.id.frag_button_0: {
+                SupporHolder.globalTypeVariable = 0;
+                break;
+            }
+
+            case  R.id.frag_button_1: {
+                /// ASSURDO
+                SupporHolder.globalTypeVariable = 1;
+                break;
+            }
+
+            case  R.id.frag_button_2: {
+                SupporHolder.globalTypeVariable = 2;
+                break;
+            }
+
+            case  R.id.frag_button_3: {
+                SupporHolder.globalTypeVariable = 3;
+                break;
+            }
+
+            case  R.id.frag_button_4: {
+                SupporHolder.globalTypeVariable = 4;
+                break;
+            }
+        }
         oTlauncher.lauchDialog();
+
         return true;
     }
 }

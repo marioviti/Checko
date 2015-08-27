@@ -9,6 +9,8 @@ import android.util.Log;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import Support.SupporHolder;
+
 /**
  * Created by marioviti on 24/08/15.
  */
@@ -27,14 +29,35 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Con
 
     private boolean checkDay() {
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         String newDate = dateFormat.format(date);
-        if (newDate.equals(DBOpenHelper.latestDay)){
+        SQLiteDatabase rDb = myOpenHelper.getReadableDatabase();
+        String rawQuery = "SELECT "+DBOpenHelper.CAL_COL_DATE+
+                " FROM " + DBOpenHelper.DB_TABLE_CAL +
+                " ORDER BY "+ DBOpenHelper.CAL_COL_PK +
+                " DESC LIMIT 1 ;";
+        Cursor cursor = rDb.rawQuery(rawQuery, null);
+        if (cursor.getCount() == 0) {
+            SupporHolder.latestDay = newDate;
+            cursor.close();
+            Log.d("checkDay","----------------------------------prima entry:" + SupporHolder.latestDay);
+            return false;
+        }
+        int columnIndexDATE = cursor.getColumnIndex(DBOpenHelper.CAL_COL_DATE);
+        if (columnIndexDATE > -1) {
+            cursor.moveToFirst();
+            SupporHolder.latestDay = cursor.getString(columnIndexDATE);
+        }
+        if (newDate.equals(SupporHolder.latestDay)){
+            cursor.close();
+            Log.d("checkDay", "----------------------------------data non cambiata:" + SupporHolder.latestDay);
             return true;
         }
-        // UPDATE DATE
-        DBOpenHelper.latestDay = newDate;
+        cursor.close();
+            Log.d("checkDay", "----------------------------------data cambiata:" + SupporHolder.latestDay + " - " + newDate);
+        SupporHolder.latestDay = newDate;
+        Log.d("checkDay", "----------------------------------data cambiata:" + SupporHolder.latestDay + " - " + newDate);
         return false;
     }
 
@@ -47,57 +70,88 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Con
         Log.d("makeNewDay", "----------------------------------successo: " + (cursor.getCount()));
         if (columnIndexMAXID > -1) {
             // UPDATE DATE ID
-            Log.d("makeNewDay", "----------------------------------latestDateID vecchio: " + (DBOpenHelper.latestDateID));
+            Log.d("makeNewDay", "----------------------------------latestDateID vecchio: " + (SupporHolder.latestDayID));
             cursor.moveToFirst();
-            DBOpenHelper.latestDateID = cursor.getInt(columnIndexMAXID);
-            Log.d("makeNewDay", "----------------------------------latestDateID nuovo: " + (DBOpenHelper.latestDateID));
+            SupporHolder.latestDayID = cursor.getInt(columnIndexMAXID);
+            SupporHolder.currentDayID = SupporHolder.latestDayID;
+            Log.d("makeNewDay", "----------------------------------latestDateID nuovo: " + (SupporHolder.latestDayID));
         }
         cursor.close();
-
     }
 
     private void newEntry( SQLiteDatabase wDb, ContentValues params) {
 
-        params.put(DBOpenHelper.PROD_COL_DATE_FK_ID, DBOpenHelper.latestDateID);
+        params.put(DBOpenHelper.PROD_COL_DATE_FK_ID, SupporHolder.latestDayID);
         wDb.insert(DBOpenHelper.DB_TABLE_PROD, null, params);
 
         Log.d("newEntry", "----------------------------------OK");
 
     }
 
-    private void updateDate( SQLiteDatabase wDb, String typeValue ) {
+    private void updateDate( SQLiteDatabase wDb, int typeValue ) {
 
-        String update = "UPDATE "+DBOpenHelper.DB_TABLE_CAL+" SET "+typeValue+" = "+typeValue+" + 1 "+
-                "WHERE "+DBOpenHelper.CAL_COL_PK+" = "+ DBOpenHelper.latestDateID + " ;";
+        String type = "type"+typeValue;
+        String update = "UPDATE "+DBOpenHelper.DB_TABLE_CAL+" SET "+type+" = "+type+" + 1 "+
+                "WHERE "+DBOpenHelper.CAL_COL_PK+" = "+ SupporHolder.latestDayID + " ;";
+
         wDb.execSQL(update);
-
+        Log.d("updateDate", update);
         Log.d("updateDate", "----------------------------------OK");
 
     }
 
     private void getCalEntries(SQLiteDatabase rDb) {
 
-        String query = "SELECT * FROM " + DBOpenHelper.CAL_COL_DATE + " ORDER BY " + DBOpenHelper.CAL_COL_PK + " DESC;";
+        String query = "SELECT * FROM " + DBOpenHelper.DB_TABLE_CAL + " ORDER BY " + DBOpenHelper.CAL_COL_PK + " DESC;";
         Cursor cursor = rDb.rawQuery(query, null);
 
-        int columnIndexPK = cursor.getColumnIndex(DBOpenHelper.CAL_COL_PK),
-                columnIndexDATE = cursor.getColumnIndex(DBOpenHelper.CAL_COL_DATE),
-                columnIndexTYPE1 = cursor.getColumnIndex(DBOpenHelper.CAL_COL_TYPE1),
-                columnIndexTYPE2 = cursor.getColumnIndex(DBOpenHelper.CAL_COL_TYPE2),
-                columnIndexTYPE3 = cursor.getColumnIndex(DBOpenHelper.CAL_COL_TYPE3),
-                columnIndexTYPE4 = cursor.getColumnIndex(DBOpenHelper.CAL_COL_TYPE4),
-                columnIndexTYPE5 = cursor.getColumnIndex(DBOpenHelper.CAL_COL_TYPE5);
+        while (cursor.moveToNext()) {
+            Log.d("FETCH_RES", "----------------------------------columnIndexPK: " + cursor.getInt(0));
+            Log.d("FETCH_RES", "----------------------------------columnIndexDATE: " + cursor.getString(1));
+            Log.d("FETCH_RES", "----------------------------------columnIndexTYPE0: " + cursor.getInt(2));
+            Log.d("FETCH_RES", "----------------------------------columnIndexTYPE1: " + cursor.getInt(3));
+            Log.d("FETCH_RES", "----------------------------------columnIndexTYPE2: " + cursor.getInt(4));
+            Log.d("FETCH_RES", "----------------------------------columnIndexTYPE3: " + cursor.getInt(5));
+            Log.d("FETCH_RES", "----------------------------------columnIndexTYPE4: " + cursor.getInt(6));
+        }
+        cursor.close();
+    }
+
+    private void createSummary(SQLiteDatabase rDb) {
+
+        String query = "SELECT" +
+                " SUM("+DBOpenHelper.PROD_COL_CARB+")"+
+                ", SUM(" +DBOpenHelper.PROD_COL_PROT+")"+
+                ", SUM(" +DBOpenHelper.PROD_COL_FAT+")"+
+                ", SUM(" +DBOpenHelper.PROD_COL_CAL+")"+
+                ", " +DBOpenHelper.PROD_COL_TYPE+
+                " FROM " +DBOpenHelper.DB_TABLE_PROD+
+                " GROUP BY " +DBOpenHelper.PROD_COL_TYPE +
+                " HAVING " +DBOpenHelper.PROD_COL_DATE_FK_ID +" = "+ SupporHolder.currentDayID +
+                " ;";
+
+        Cursor cursor = rDb.rawQuery(query, null);
 
         while (cursor.moveToNext()) {
-            Log.d("FETCH_RES", "----------------------------------estratto: " + cursor.getInt(columnIndexPK));
-            Log.d("FETCH_RES", "----------------------------------estratto: " + cursor.getString(columnIndexDATE));
-            Log.d("FETCH_RES", "----------------------------------estratto: " + cursor.getInt(columnIndexTYPE1));
-            Log.d("FETCH_RES", "----------------------------------estratto: " + cursor.getInt(columnIndexTYPE2));
-            Log.d("FETCH_RES", "----------------------------------estratto: " + cursor.getInt(columnIndexTYPE3));
-            Log.d("FETCH_RES", "----------------------------------estratto: " + cursor.getInt(columnIndexTYPE4));
-            Log.d("FETCH_RES", "----------------------------------estratto: " + cursor.getInt(columnIndexTYPE5));
 
+            fillSummaryValues(cursor,SupporHolder.currentDayID);
         }
+
+        cursor.close();
+    }
+
+    private void fillSummaryValues(Cursor cursor, int currentDayID) {
+
+        String key = SupporHolder.summaryKey(currentDayID,cursor.getInt(4));
+        float[] values = new float[4];
+        values[0] = cursor.getFloat(0);//CARB
+        values[1] = cursor.getFloat(1);//PROT
+        values[2] = cursor.getFloat(2);//FAT
+        values[3] = cursor.getFloat(3);//CAL
+        SupporHolder.summaryCalendarCache.put(key, values);
+
+        float[] valuesck = SupporHolder.summaryCalendarCache.get(key);
+        Log.d("fillSummaryValues", "-----------------values: "+valuesck[0]+"-"+valuesck[1]+"-"+valuesck[2]+"-"+valuesck[3]+" key: "+key);
     }
 
     @Override
@@ -112,46 +166,19 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Con
                     makeNewDay(db);
                 }
                 newEntry(db, params[0]);
-                updateDate(db, params[0].getAsString(DBOpenHelper.PROD_COL_TYPE));
+                updateDate(db, params[0].getAsInteger(DBOpenHelper.PROD_COL_TYPE));
 
                 break;
             }
             case DBQueryManager.FETCH : {
 
                 SQLiteDatabase db = myOpenHelper.getReadableDatabase();
-
                 getCalEntries(db);
-                /*
-                String[] result_columns = new String[] {
-                        DBOpenHelper.PROD_COL_NAME,
-                        DBOpenHelper.PROD_COL_FAT,
-                        DBOpenHelper.PROD_COL_DATE_FK_ID };
-                String where = null;
-                String whereArgs[] = null;
-                String groupBy = null;
-                String having = null;
-                String order = null;
-
-                SQLiteDatabase db = myOpenHelper.getReadableDatabase();
-                Cursor cursor = db.query(DBOpenHelper.DB_TABLE_PROD, result_columns, where, whereArgs, groupBy, having, order);
-                int columnIndexPROD_COL_NAME = cursor.getColumnIndex(DBOpenHelper.PROD_COL_NAME);
-                int columnIndexPROD_COL_FAT = cursor.getColumnIndex(DBOpenHelper.PROD_COL_FAT);
-                int columnIndexPROD_COL_DATE_FK_ID = cursor.getColumnIndex(DBOpenHelper.PROD_COL_DATE_FK_ID);
-                if (columnIndexPROD_COL_NAME > -1) {
-                    while(cursor.moveToNext()) {
-                        DBOpenHelper.latestDay = cursor.getString(columnIndexPROD_COL_NAME);
-                        Log.d("FETCH_RES", "----------------------------------estratto: " + cursor.getString(columnIndexPROD_COL_NAME));
-                        Log.d("FETCH_RES", "----------------------------------estratto: " + cursor.getString(columnIndexPROD_COL_FAT));
-                        Log.d("FETCH_RES", "----------------------------------estratto: " + cursor.getDouble(columnIndexPROD_COL_DATE_FK_ID));
-                    }
-                }
-                cursor.close();
-                */
+                //createSummary(db);
 
                 break;
             }
         }
-
         return null;
     }
 
