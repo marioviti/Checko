@@ -38,42 +38,33 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if ( savedInstanceState == null) {
+        //RESTORE STATE
+        if (savedInstanceState == null) {
+
             DisplayMetrics metrics = getResources().getDisplayMetrics();
-            Log.d("onCreate", "---------------------------METRICS: "+metrics.toString());
+            Log.d("onCreate", "---------------------------FIRST ACCESS METRICS: " + metrics.toString());
+
+        }else {
+            DBOpenHelper.latestDay = savedInstanceState.getString("latestDay");
+            DBOpenHelper.latestDateID = savedInstanceState.getInt("latestDateID");
         }
 
-        //ROUTER SESSION
-
         //INITIATE DB
-        DBOpenHelper  myOpenHelper = new DBOpenHelper (MainActivity.this, DBOpenHelper.DB_NAME, null, DBOpenHelper.DB_V);
-        myOpenHelper.onCreate( myOpenHelper.getWritableDatabase());
+        DBOpenHelper myOpenHelper = new DBOpenHelper(MainActivity.this, DBOpenHelper.DB_NAME, null, DBOpenHelper.DB_V);
+        myOpenHelper.onCreate(myOpenHelper.getWritableDatabase());
 
         //CONNECTION SESSION
-        labelAPIroute= new LabelAPIRouter(this,myOpenHelper,"mc896havn4wp7rf73yu5sxxs");
+        labelAPIroute = new LabelAPIRouter(this, myOpenHelper, "mc896havn4wp7rf73yu5sxxs");
         mainDialog = new Dialog(MainActivity.this);
 
-        //!ROUTER SESSION
-
         //FRAGMENT SESSION
-
         initiatePool();
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         FragmentManager fm = getSupportFragmentManager();
         PagerAdapter adapterViewPager = new MyFragmentPagerAdapter(fm);
         viewPager.setAdapter(adapterViewPager);
 
-        //!FRAGMENT SESSION
-
         Log.d("onCreate", "---------------------------MAIN_ACTIVITY");
-    }
-
-    private static void initiatePool() {
-
-        fgtPool = new FragmentPool(PAG_NUM);
-        fgtPool.insertFragment(MenuFragment.newInstance("menu_fragment", MENU_FRAG ));
-        fgtPool.insertFragment(RootFragment.newInstance("root_fragment", ROOT_FRAG ));
-        fgtPool.insertFragment(CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG ));
     }
 
     @Override
@@ -92,8 +83,10 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     protected void onSaveInstanceState (Bundle savedInstanceState) {
 
         super.onSaveInstanceState(savedInstanceState);
-        if (savedInstanceState.getBoolean("first_start_config"))
-            savedInstanceState.putBoolean("first_start_config",false);
+
+        savedInstanceState.putString("latestDay", DBOpenHelper.latestDay);
+        savedInstanceState.putInt("latestDateID", DBOpenHelper.latestDateID);
+
         Log.d("onSaveInstanceState", "---------------------------MAIN_ACTIVITY");
     }
 
@@ -102,18 +95,6 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
         super.onDestroy();
         Log.d("onDestroy", "---------------------------MAIN_ACTIVITY");
-    }
-
-    // FragmentSwapper: Metodo di interfacciamento fra ROOT_FRAG e MainActiviy.
-    // La MainActiviy comprendendo il pageAdapeter può voltare le pagine mentre il ROOT fragment ne cambia il contenuto.
-    @Override
-    public boolean swapWith(int pos) {
-
-        viewPager.setCurrentItem(ROOT_FRAG);
-        if(fgtPool.getAt(ROOT_FRAG)==null) {
-            return ((FragmentSwapper)fgtPool.insertFragmentAtandReturn(RootFragment.newInstance("root_fragment", ROOT_FRAG), ROOT_FRAG)).swapWith(pos);
-        }
-        return ((FragmentSwapper)(fgtPool.getAt(ROOT_FRAG))).swapWith(pos);
     }
 
     // OnTopDialogLauncher: gestione fragments annidiati: callback per visualizzazione dialog onTop
@@ -160,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     @Override
     public void onSessionExpired() {
 
-        labelAPIroute.sessionHasStarted=false;
         labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
     }
 
@@ -169,7 +149,29 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
         TextView text = (TextView) this.mainDialog.findViewById(R.id.dialog_text_view);
         if(text!=null)
-            text.setText("Errore Connessione, connessione non presente");
+            text.setText("Errore Connessione non presente");
+    }
+
+    private static void initiatePool() {
+
+        fgtPool = new FragmentPool(PAG_NUM);
+        fgtPool.insertFragment(MenuFragment.newInstance("menu_fragment", MENU_FRAG ));
+        fgtPool.insertFragment(RootFragment.newInstance("root_fragment", ROOT_FRAG ));
+        fgtPool.insertFragment(CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG ));
+    }
+
+    // FragmentSwapper: Metodo di interfacciamento fra ROOT_FRAG e MainActiviy.
+    // La MainActiviy comprendendo il pageAdapeter può voltare le pagine mentre il ROOT fragment ne cambia il contenuto.
+    @Override
+    public boolean swapWith(int pos) {
+
+        viewPager.setCurrentItem(ROOT_FRAG);
+
+        if(fgtPool.getAt(ROOT_FRAG)==null) {
+            return ((FragmentSwapper)fgtPool.insertFragmentAtandReturn(RootFragment.newInstance("root_fragment", ROOT_FRAG), ROOT_FRAG)).swapWith(pos);
+        }
+
+        return ((FragmentSwapper)(fgtPool.getAt(ROOT_FRAG))).swapWith(pos);
     }
 
     // CLASSE PRIVATA: gestione dei fragment ritenuti dall'activity

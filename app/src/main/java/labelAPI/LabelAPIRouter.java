@@ -33,8 +33,7 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
 
     private URL current_url;
     private String sessionID;
-    public boolean sessionHasStarted = false;
-    private static LabelAPIHttpTask httpReqTask;
+    private boolean sessionHasStarted = false;
     LabelAPIServiceCallbacks caller;
     DBOpenHelper dbOpener;
 
@@ -46,44 +45,55 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
         createSessionStartURL();
     }
 
+    public boolean hasSessionStarted() {
+
+        return sessionHasStarted;
+    }
+
     public void createSessionStartURL() {
+
         try { current_url = new URL(LabelAPIProtocol.URL_BASE+ LabelAPIProtocol.URL_COMM_START_SESSION+"?"+ LabelAPIProtocol.API_DETAILS+"&"+ LabelAPIProtocol.API_KEY);
         }catch (MalformedURLException e){ e.printStackTrace(); Log.d("LabelApiHandler", "------------------------------------------------------URL malformato"); }
+
     }
 
     public void createSessionArrayURL(String GTIN) {
+
         try { current_url = new URL(LabelAPIProtocol.URL_BASE+ LabelAPIProtocol.URL_COMM_ARRAY+"?u="+GTIN+"&sid="+this.sessionID+"&n=1&s=0&f=json&"+ LabelAPIProtocol.API_KEY);
         }catch (MalformedURLException e){ e.printStackTrace(); Log.d("LabelApiHandler", "------------------------------------------------------URL malformato"); }
+
     }
 
-    public void startHttpTask (int task) { new LabelAPIHttpTask( current_url, this, task ).execute(); }
+    public void startHttpTask (int task) {
 
-    public void startDBTask (ContentValues values, int task) { new DBTransactionAsyncTask( this, this.dbOpener, task ).execute(values); }
+        if(task == LabelAPIProtocol.SESSION_CREATE_REQ)
+            sessionHasStarted = false;
+        new LabelAPIHttpTask( current_url, this, task ).execute();
 
-    public boolean hasSessionStarted() {
-        return sessionHasStarted;
+    }
+
+    public void startDBTask (ContentValues values, int task) {
+
+        new DBTransactionAsyncTask( this, this.dbOpener, task ).execute(values);
+
     }
 
     @Override
     public void manageHttpRes( JSONObject res, int resType ) {
 
         try {
-            // da java 7 si possono fare questi switch case, non lo sapevo
             String errCode = res.getString("result");
             switch(errCode){
                 case LabelAPIProtocol.TASK_ERR_CODE_OK:{
-                    switchResTask(res,resType);
-                    Log.d("manageHttpRes","------------------------------------------------------" + errCode);
+                    switchResTask(res, resType);
                     break;
                 }
                 case LabelAPIProtocol.TASK_ERR_CODE_NO_RES: {
                     caller.onReceivedNullResponse();
-                    Log.d("manageHttpRes", "------------------------------------------------------" + errCode);
                     break;
                 }
                 case LabelAPIProtocol.TASK_ERR_CODE_NO_CONNECTION: {
                     caller.onHttpConnectionError();
-                    Log.d("manageHttpRes", "------------------------------------------------------" + errCode);
                     break;
                 }
             }
@@ -98,9 +108,11 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
         switch (resType) {
             case LabelAPIProtocol.SESSION_CREATE_REQ: {
                 try {
-                    sessionHasStarted = true;
+                    // SESSION STARTED
                     JSONObject values = (JSONObject)res.get("values");
                     this.sessionID = values.get("session_id").toString();
+                    this.sessionHasStarted = true;
+
                     Log.d("LabelApiHandler", "------------------------------------------------------session_id=" + sessionID);
                 }catch (Exception e) {
                     e.printStackTrace();
@@ -115,7 +127,7 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
 
                 }catch(JSONException e) {
                     e.printStackTrace();
-                    Log.d("LabelApiHandler", "------------------------------------------------------PROBLEMI CONNESSIONE ARRAY");
+                    Log.d("LabelApiHandler", "------------------------------------------------------PROBLEMI RISPOSTA ARRAY");
                 }
                 break;
             }
@@ -127,29 +139,28 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
         ContentValues values = null;
         try {
             values = new ContentValues();
-            Log.d("fillValues","-----------------------------------------------------"+product.toString(4));
             JSONArray nutrients = (JSONArray) product.get("nutrients");
-            values.put(DBOpenHelper.COL_UPC, product.getString("upc"));
-            values.put(DBOpenHelper.COL_NAME, product.getString("product_name"));
-            values.put(DBOpenHelper.COL_TYPE,"pescio");
+            values.put(DBOpenHelper.PROD_COL_UPC, product.getString("upc"));
+            values.put(DBOpenHelper.PROD_COL_NAME, product.getString("product_name"));
+            values.put(DBOpenHelper.PROD_COL_TYPE, DBOpenHelper.CAL_COL_TYPE1);
             String nutrient_name;
             for (int i = 0; i < nutrients.length(); i++) {
                 nutrient_name = (((JSONObject)nutrients.get(i)).getString("nutrient_name"));
                 switch (nutrient_name) {
                     case "Calories":{
-                        values.put(DBOpenHelper.COL_CAL,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
+                        values.put(DBOpenHelper.PROD_COL_CAL,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
                         break;
                     }
                     case "Protein":{
-                        values.put(DBOpenHelper.COL_PROT,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
+                        values.put(DBOpenHelper.PROD_COL_PROT,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
                         break;
                     }
                     case "Total Carbohydrate":{
-                        values.put(DBOpenHelper.COL_CARB,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
+                        values.put(DBOpenHelper.PROD_COL_CARB,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
                         break;
                     }
                     case "Total Fat":{
-                        values.put(DBOpenHelper.COL_FAT,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
+                        values.put(DBOpenHelper.PROD_COL_FAT,(((JSONObject)nutrients.get(i)).getDouble("nutrient_value")));
                         break;
                     }
                 }
@@ -162,7 +173,9 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
 
     @Override
     public void manageQueryRes(ContentValues res, int task) {
+        /*
         if(task == DBQueryManager.INSERT)
             startDBTask(null,DBQueryManager.FETCH);
+        */
     }
 }

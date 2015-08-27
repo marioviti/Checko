@@ -32,6 +32,31 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         page = getArguments().getString("page");
         pos = getArguments().getInt("pos");
         View v = li.inflate(R.layout.page_fragment0, container, false);
+
+        switch (pos) {
+            case 0: {
+                v.setBackgroundColor(getResources().getColor(R.color.btn_color_type1));
+                break;
+            }
+            case 1: {
+                v.setBackgroundColor(getResources().getColor(R.color.btn_color_type2));
+                break;
+            }
+            case 2: {
+                v.setBackgroundColor(getResources().getColor(R.color.btn_color_type3));
+                break;
+            }
+            case 3: {
+                v.setBackgroundColor(getResources().getColor(R.color.btn_color_type4));
+                break;
+            }
+            case 4: {
+                v.setBackgroundColor(getResources().getColor(R.color.btn_color_type5));
+                break;
+            }
+        }
+
+
         TextView tv = (TextView) v.findViewById(R.id.tvLabel);
         tv.setText(pos + " " + page);
 

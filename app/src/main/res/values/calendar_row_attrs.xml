@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CalendarRowBarView">
+        <attr name="rec1" format="float" />
+        <attr name="rec2" format="float" />
+        <attr name="rec3" format="float" />
+        <attr name="rec4" format="float" />
+        <attr name="rec5" format="float" />
+    </declare-styleable>
+
+</resources>

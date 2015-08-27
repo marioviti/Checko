@@ -41,13 +41,20 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
         view = li.inflate(R.layout.menu_fragment, container, false);
         Button btn0 = (Button) view.findViewById(R.id.frag_button_0),
             btn1 = (Button) view.findViewById(R.id.frag_button_1),
-            btn2 = (Button) view.findViewById(R.id.frag_button_2);
+            btn2 = (Button) view.findViewById(R.id.frag_button_2),
+            btn3 = (Button) view.findViewById(R.id.frag_button_3),
+            btn4 = (Button) view.findViewById(R.id.frag_button_4);
+
         btn0.setOnClickListener(this);
         btn0.setOnLongClickListener(this);
         btn1.setOnClickListener(this);
         btn1.setOnLongClickListener(this);
         btn2.setOnClickListener(this);
         btn2.setOnLongClickListener(this);
+        btn3.setOnClickListener(this);
+        btn3.setOnLongClickListener(this);
+        btn4.setOnClickListener(this);
+        btn4.setOnLongClickListener(this);
 
         return view;
     }
@@ -72,16 +79,33 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
     @Override
     public void onClick(View v) {
 
-        if (v == view.findViewById(R.id.frag_button_0)) {
-            fgSwap.swapWith(0);
-        }
-        else if (v == view.findViewById(R.id.frag_button_1)) {
-            fgSwap.swapWith(1);
-        }
-        else if (v == view.findViewById(R.id.frag_button_2)) {
-            fgSwap.swapWith(2);
-        }
+        int vID = v.getId();
+        switch (vID) {
+            case R.id.frag_button_0: {
+                fgSwap.swapWith(0);
+                break;
+            }
 
+            case  R.id.frag_button_1: {
+                fgSwap.swapWith(1);
+                break;
+            }
+
+            case  R.id.frag_button_2: {
+                fgSwap.swapWith(2);
+                break;
+            }
+
+            case  R.id.frag_button_3: {
+                fgSwap.swapWith(3);
+                break;
+            }
+
+            case  R.id.frag_button_4: {
+                fgSwap.swapWith(4);
+                break;
+            }
+        }
     }
 
     @Override

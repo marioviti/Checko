@@ -22,7 +22,7 @@ import android.view.animation.AnimationUtils;
 public class RootFragment extends Fragment implements FragmentSwapper {
 
     private static FragmentPool fgtPool;
-    private static int PAG_NUM = 3;
+    private static int PAG_NUM = 5;
     private static FragmentManager fm;
     private static FragmentActivity myContext;
     private int currentFrag;

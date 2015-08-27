@@ -5,14 +5,12 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
-import java.util.Calendar;
-import java.util.List;
+import customView.CalendarRowBarView;
+import customView.SupportContentValues;
 
 /**
  * Created by marioviti on 24/08/15.
@@ -41,6 +39,9 @@ public class CalendarFragment extends ListFragment {
         Log.d("onCreateView", "---------------------------CALENDAR_FRAGMENT");
 
         if(firstView) {
+
+            SupportContentValues scv = new SupportContentValues(7);
+
             CalendarEntry[] entries = new CalendarEntry[7];
             entries[0] = new CalendarEntry("today", null);
             entries[1] = new CalendarEntry("tomorrow", null);
@@ -71,7 +72,7 @@ public class CalendarFragment extends ListFragment {
         return ff;
     }
 
-    private class CalendarEntry {
+    public class CalendarEntry {
         public String day;
         public Float values[];
 
@@ -99,13 +100,12 @@ public class CalendarFragment extends ListFragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View row = convertView;
-            if(row == null)
-            {
-                row = li.inflate(layoutResourceId, parent, false);
+            if(row == null) {
 
+                row = li.inflate(layoutResourceId, parent, false);
                 TextView day = (TextView)row.findViewById(R.id.row_textView);
-                SurfaceView values = (SurfaceView)row.findViewById(R.id.row_surfaceView);
                 CalendarEntry entryDay = data[position];
+                CalendarRowBarView crow = (CalendarRowBarView)row.findViewById(R.id.row_custom_view);
                 day.setText(entryDay.day);
             }
             return row;
