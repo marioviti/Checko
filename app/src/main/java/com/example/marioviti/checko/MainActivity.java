@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     private static final int ROOT_FRAG = 1;
     private static final int CALEDAR_FRAG = 2;
     private static int PAG_NUM = 3;
-    private static FragmentPool fgtPool;
+    private static SolidFragmentPool fgtPool;
     private LabelAPIRouter labelAPIroute;
     private Dialog mainDialog;
 
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
     private static void initiatePool() {
 
-        fgtPool = new FragmentPool(PAG_NUM);
+        fgtPool = new SolidFragmentPool(PAG_NUM);
         fgtPool.insertFragment(MenuFragment.newInstance("menu_fragment", MENU_FRAG ));
         fgtPool.insertFragment(RootFragment.newInstance("root_fragment", ROOT_FRAG ));
         fgtPool.insertFragment(CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG ));
