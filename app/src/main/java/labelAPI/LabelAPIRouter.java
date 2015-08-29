@@ -70,7 +70,6 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
         if(task == LabelAPIProtocol.SESSION_CREATE_REQ)
             sessionHasStarted = false;
         new LabelAPIHttpTask( current_url, this, task ).execute();
-
     }
 
     @Override
@@ -81,6 +80,8 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
             switch(errCode){
                 case LabelAPIProtocol.TASK_ERR_CODE_OK:{
                     switchResTask(res, resType);
+                    if(resType!=LabelAPIProtocol.SESSION_CREATE_REQ)
+                        caller.onReceivedData();
                     break;
                 }
                 case LabelAPIProtocol.TASK_ERR_CODE_NO_RES: {
@@ -175,8 +176,12 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
     @Override
     public void manageQueryRes(ContentValues res, int task) {
 
-        if(task == DBQueryManager.INSERT)
-            startDBTask(null,DBQueryManager.FETCH);
+        if(task == DBQueryManager.INSERT) {
+            startDBTask(null, DBQueryManager.REFRESH_FETCH);
+        }
+    }
 
+    public void sync() {
+        startDBTask(null,DBQueryManager.REFRESH_FETCH);
     }
 }

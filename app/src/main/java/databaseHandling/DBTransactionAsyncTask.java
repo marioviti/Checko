@@ -6,9 +6,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.marioviti.checko.CalendarFragment;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import Support.CalendarEntry;
 import Support.SupporHolder;
 
 /**
@@ -27,52 +30,62 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Con
         this.myOpenHelper = myOpenHelper;
     }
 
-    private boolean checkDay() {
+    private boolean checkCurrentDay() {
+
+        // Ritorna false in 2 casi, se non ci sono date inserite nel database o se l'ultima data è diversa da quella corrente
+        // Ritorna true se la data nel databse è uguale a quella corrente e le setta nel contenitore globale.
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         String newDate = dateFormat.format(date);
         SQLiteDatabase rDb = myOpenHelper.getReadableDatabase();
-        String rawQuery = "SELECT "+DBOpenHelper.CAL_COL_DATE+
+        String rawQuery = "SELECT "+DBOpenHelper.CAL_COL_PK+
+                ", "+DBOpenHelper.CAL_COL_DATE+
                 " FROM " + DBOpenHelper.DB_TABLE_CAL +
                 " ORDER BY "+ DBOpenHelper.CAL_COL_PK +
                 " DESC LIMIT 1 ;";
         Cursor cursor = rDb.rawQuery(rawQuery, null);
         if (cursor.getCount() == 0) {
-            SupporHolder.latestDay = newDate;
+            //SupporHolder.latestDay = newDate;
             cursor.close();
             Log.d("checkDay","----------------------------------prima entry:" + SupporHolder.latestDay);
             return false;
         }
         int columnIndexDATE = cursor.getColumnIndex(DBOpenHelper.CAL_COL_DATE);
+        int columnIndexDATEID = cursor.getColumnIndex(DBOpenHelper.CAL_COL_PK);
         if (columnIndexDATE > -1) {
             cursor.moveToFirst();
             SupporHolder.latestDay = cursor.getString(columnIndexDATE);
+            SupporHolder.latestDayID = cursor.getInt(columnIndexDATEID);
         }
+        cursor.close();
         if (newDate.equals(SupporHolder.latestDay)){
-            cursor.close();
             Log.d("checkDay", "----------------------------------data non cambiata:" + SupporHolder.latestDay);
             return true;
         }
-        cursor.close();
             Log.d("checkDay", "----------------------------------data cambiata:" + SupporHolder.latestDay + " - " + newDate);
-        SupporHolder.latestDay = newDate;
-        Log.d("checkDay", "----------------------------------data cambiata:" + SupporHolder.latestDay + " - " + newDate);
         return false;
     }
 
     private void makeNewDay(SQLiteDatabase wDb) {
 
+        // current e latest coincidono
+
         wDb.insert(DBOpenHelper.DB_TABLE_CAL, DBOpenHelper.CAL_COL_TYPE1, null);
         SQLiteDatabase rDb = myOpenHelper.getReadableDatabase();
-        Cursor cursor = rDb.rawQuery("SELECT MAX("+DBOpenHelper.CAL_COL_PK+") as MAXID FROM "+ DBOpenHelper.DB_TABLE_CAL+" ;",null);
-        int columnIndexMAXID = cursor.getColumnIndex("MAXID");
-        Log.d("makeNewDay", "----------------------------------successo: " + (cursor.getCount()));
-        if (columnIndexMAXID > -1) {
-            // UPDATE DATE ID
-            Log.d("makeNewDay", "----------------------------------latestDateID vecchio: " + (SupporHolder.latestDayID));
+        String rawQuery = "SELECT "+DBOpenHelper.CAL_COL_PK+
+                ", "+DBOpenHelper.CAL_COL_DATE+
+                " FROM " + DBOpenHelper.DB_TABLE_CAL +
+                " ORDER BY "+ DBOpenHelper.CAL_COL_PK +
+                " DESC LIMIT 1 ;";
+        Cursor cursor = rDb.rawQuery(rawQuery,null);
+        int columnIndexDATE = cursor.getColumnIndex(DBOpenHelper.CAL_COL_DATE);
+        int columnIndexDATEID = cursor.getColumnIndex(DBOpenHelper.CAL_COL_PK);
+        if (columnIndexDATE > -1) {
             cursor.moveToFirst();
-            SupporHolder.latestDayID = cursor.getInt(columnIndexMAXID);
+            SupporHolder.latestDay = cursor.getString(columnIndexDATE);
+            SupporHolder.latestDayID = cursor.getInt(columnIndexDATEID);
+            SupporHolder.currentDay = SupporHolder.latestDay;
             SupporHolder.currentDayID = SupporHolder.latestDayID;
             Log.d("makeNewDay", "----------------------------------latestDateID nuovo: " + (SupporHolder.latestDayID));
         }
@@ -100,12 +113,13 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Con
 
     }
 
-    private void getCalEntries(SQLiteDatabase rDb) {
-
-        String query = "SELECT * FROM " + DBOpenHelper.DB_TABLE_CAL + " ORDER BY " + DBOpenHelper.CAL_COL_PK + " DESC;";
+    private void createCalendar(SQLiteDatabase rDb) {
+        int cachelimit = SupporHolder.cacheDayLimit;
+        String query = "SELECT * FROM " + DBOpenHelper.DB_TABLE_CAL + " ORDER BY " + DBOpenHelper.CAL_COL_PK + " DESC LIMIT "+cachelimit+";";
         Cursor cursor = rDb.rawQuery(query, null);
 
-        while (cursor.moveToNext()) {
+        int i = 0;
+        while (cursor.moveToNext() && i<cachelimit) {
             Log.d("FETCH_RES", "----------------------------------columnIndexPK: " + cursor.getInt(0));
             Log.d("FETCH_RES", "----------------------------------columnIndexDATE: " + cursor.getString(1));
             Log.d("FETCH_RES", "----------------------------------columnIndexTYPE0: " + cursor.getInt(2));
@@ -113,12 +127,20 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Con
             Log.d("FETCH_RES", "----------------------------------columnIndexTYPE2: " + cursor.getInt(4));
             Log.d("FETCH_RES", "----------------------------------columnIndexTYPE3: " + cursor.getInt(5));
             Log.d("FETCH_RES", "----------------------------------columnIndexTYPE4: " + cursor.getInt(6));
+            String key = cursor.getString(1);
+            int[] values = new int[] {cursor.getInt(2),cursor.getInt(3),cursor.getInt(4),cursor.getInt(5),cursor.getInt(6),cursor.getInt(0)};
+            SupporHolder.calendarCache[i] = new CalendarEntry(key,values);
+            SupporHolder.currentDay = key;
+            SupporHolder.currentDayID = cursor.getInt(0);
+            SupporHolder.currentChaceDayID = 0;
+            i++;
         }
         cursor.close();
     }
 
     private void createSummary(SQLiteDatabase rDb) {
 
+        int currentDayID = SupporHolder.currentDayID;
         String query = "SELECT" +
                 " SUM("+DBOpenHelper.PROD_COL_CARB+")"+
                 ", SUM(" +DBOpenHelper.PROD_COL_PROT+")"+
@@ -127,16 +149,12 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Con
                 ", " +DBOpenHelper.PROD_COL_TYPE+
                 " FROM " +DBOpenHelper.DB_TABLE_PROD+
                 " GROUP BY " +DBOpenHelper.PROD_COL_TYPE +
-                " HAVING " +DBOpenHelper.PROD_COL_DATE_FK_ID +" = "+ SupporHolder.currentDayID +
+                " HAVING " +DBOpenHelper.PROD_COL_DATE_FK_ID +" = "+ currentDayID +
                 " ;";
-
         Cursor cursor = rDb.rawQuery(query, null);
-
         while (cursor.moveToNext()) {
-
-            fillSummaryValues(cursor,SupporHolder.currentDayID);
+            fillSummaryValues(cursor,currentDayID);
         }
-
         cursor.close();
     }
 
@@ -162,7 +180,7 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Con
             case DBQueryManager.INSERT : {
 
                 SQLiteDatabase db = myOpenHelper.getWritableDatabase();
-                if(!checkDay()) {
+                if(!checkCurrentDay()) {
                     makeNewDay(db);
                 }
                 newEntry(db, params[0]);
@@ -170,12 +188,16 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Con
 
                 break;
             }
-            case DBQueryManager.FETCH : {
+            case DBQueryManager.REFRESH_FETCH : {
 
-                SQLiteDatabase db = myOpenHelper.getReadableDatabase();
-                getCalEntries(db);
-                //createSummary(db);
-
+                if(SupporHolder.latestDayID==-1)
+                    checkCurrentDay();
+                // uso dell'effetto collaterale
+                if(SupporHolder.latestDayID!=-1) {
+                    SQLiteDatabase db = myOpenHelper.getReadableDatabase();
+                    createCalendar(db);
+                    createSummary(db);
+                }
                 break;
             }
         }

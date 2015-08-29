@@ -8,6 +8,6 @@ import android.content.ContentValues;
 public interface DBQueryManager {
 
     int INSERT = 0;
-    int FETCH = 1;
+    int REFRESH_FETCH = 1;
     void manageQueryRes(ContentValues res, int task);
 }

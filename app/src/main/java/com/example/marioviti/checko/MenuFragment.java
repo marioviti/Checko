@@ -117,31 +117,35 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
         switch (v.getId()) {
             case R.id.frag_button_0: {
                 SupporHolder.globalTypeVariable = 0;
+                oTlauncher.lauchDialog(0);
                 break;
             }
 
             case  R.id.frag_button_1: {
                 /// ASSURDO
                 SupporHolder.globalTypeVariable = 1;
+                oTlauncher.lauchDialog(1);
                 break;
             }
 
             case  R.id.frag_button_2: {
                 SupporHolder.globalTypeVariable = 2;
+                oTlauncher.lauchDialog(2);
                 break;
             }
 
             case  R.id.frag_button_3: {
                 SupporHolder.globalTypeVariable = 3;
+                oTlauncher.lauchDialog(3);
                 break;
             }
 
             case  R.id.frag_button_4: {
                 SupporHolder.globalTypeVariable = 4;
+                oTlauncher.lauchDialog(4);
                 break;
             }
         }
-        oTlauncher.lauchDialog();
 
         return true;
     }

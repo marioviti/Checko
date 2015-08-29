@@ -10,6 +10,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import Support.SupporHolder;
 import customView.CircularIndicator;
 import customView.CircularIndicatorAnimation;
@@ -21,6 +23,8 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
     private String page;
     private CircularIndicator c;
     private CircularIndicatorAnimation ca;
+    private View v;
+    private ArrayList<float[]> summariesCache = new ArrayList<>(10);
 
     public void onCreate(Bundle si) {
         super.onCreate(si);
@@ -32,7 +36,7 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
 
         page = getArguments().getString("page");
         pos = getArguments().getInt("pos");
-        View v = li.inflate(R.layout.page_fragment0, container, false);
+        v = li.inflate(R.layout.page_fragment0, container, false);
 
         switch (pos) {
             case 0: {
@@ -57,8 +61,20 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
             }
         }
 
+
         TextView tv = (TextView) v.findViewById(R.id.tvLabel);
-        tv.setText(pos + " " + page);
+        //tv.setText(pos + " " + page);
+        if(SupporHolder.currentDayID!=-1)
+            tv.setText(SupporHolder.currentDay);
+        else
+            tv.setText("Starts Today");
+
+        updateUI();
+        return v;
+    }
+
+    public void updateUI() {
+
         float[] values = null;
         String key = SupporHolder.summaryKey(SupporHolder.currentDayID, pos);
         if(SupporHolder.summaryCalendarCache.containsKey(key)){
@@ -70,24 +86,29 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         TextView tvFAT = (TextView) v.findViewById(R.id.text_FAT);
         TextView tvCAL = (TextView) v.findViewById(R.id.text_CAL);
         if(values!=null) {
-            tvCARB.setText(values[0] + "");
-            tvPROT.setText(values[1] + "");
-            tvFAT.setText(values[2] + "");
-            tvCAL.setText(values[3] + "");
+            tvCARB.setText("Carbs\n"+values[0] + " gr");
+            tvPROT.setText("Proteins\n"+values[1] + " gr");
+            tvFAT.setText("Fats\n"+values[2] + " gr");
+            tvCAL.setText("Calories\n"+values[3] + " kcal");
         }
-
-        /*
-        TextView tvCARB = (TextView) v.findViewById(R.id.page_text_CARB);
-        TextView tvPROT = (TextView) v.findViewById(R.id.page_text_PROT);
-        TextView tvFAT = (TextView) v.findViewById(R.id.page_text_FAT);
-        TextView tvCAL = (TextView) v.findViewById(R.id.page_text_CAL);
-        */
-
+        float percent = 0;
+        if(SupporHolder.currentChaceDayID!=-1)
+            percent = getPercent();
+        TextView tvIndicator = (TextView) v.findViewById(R.id.indicator_textView);
+        tvIndicator.setText(Math.ceil(percent * 100)+"%");
         c = (CircularIndicator) v.findViewById(R.id.circular_indicator);
-        ca = new CircularIndicatorAnimation(c,240);
-        ca.setDuration(4000);
+        c.setAngle(0);
+        ca = new CircularIndicatorAnimation(c,percent*360);
+        ca.setDuration(1500);
+    }
 
-        return v;
+    public float getPercent() {
+        int[] values = SupporHolder.calendarCache[SupporHolder.currentChaceDayID].values;
+        int sum = 0;
+        for (int i=0; i< values.length-1; i++) {
+            sum+=values[i];
+        }
+        return (float)(values[this.pos]/(float)sum);
     }
 
     @Override

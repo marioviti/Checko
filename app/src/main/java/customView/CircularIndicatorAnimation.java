@@ -13,7 +13,7 @@ public class CircularIndicatorAnimation extends Animation {
     private float oldAngle;
     private float newAngle;
 
-    public CircularIndicatorAnimation(CircularIndicator circle, int newAngle) {
+    public CircularIndicatorAnimation(CircularIndicator circle, float newAngle) {
         this.oldAngle = circle.getAngle();
         this.newAngle = newAngle;
         this.circle = circle;

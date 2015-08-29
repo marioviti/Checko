@@ -9,20 +9,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import Support.CalendarEntry;
+import Support.SupporHolder;
+import customView.CalendarRowBarSelectAnimation;
 import customView.CalendarRowBarView;
-import customView.SupportContentValues;
 
 /**
  * Created by marioviti on 24/08/15.
  */
-public class CalendarFragment extends ListFragment {
+public class CalendarFragment extends ListFragment implements View.OnClickListener{
 
     private boolean firstView = true;
     private View view;
+    private View.OnClickListener myself;
 
     @Override
     public void onCreate(Bundle si) {
         super.onCreate(si);
+        myself = this;
         Log.d("onCreate", "---------------------------CALENDAR_FRAGMENT");
     }
 
@@ -38,25 +43,25 @@ public class CalendarFragment extends ListFragment {
         // Get references to UI widgets
         Log.d("onCreateView", "---------------------------CALENDAR_FRAGMENT");
 
-        if(firstView) {
+        CalendarEntry[] entries = new CalendarEntry[1];
+        entries[0] = new CalendarEntry("today", new int[] {20,20,20,20,20,-1});
 
-            SupportContentValues scv = new SupportContentValues(7);
-
-            CalendarEntry[] entries = new CalendarEntry[7];
-            entries[0] = new CalendarEntry("today", null);
-            entries[1] = new CalendarEntry("tomorrow", null);
-            entries[2] = new CalendarEntry("tomotomorrow", null);
-            entries[3] = new CalendarEntry("totomotomorrow", null);
-            entries[4] = new CalendarEntry("tototomotomorrow", null);
-            entries[5] = new CalendarEntry("tototomotomorrow2", null);
-            entries[6] = new CalendarEntry("todayaganin", null);
-
-            CalendarListFragmentAdapter caa = new CalendarListFragmentAdapter(li, li.getContext(), R.layout.custom_row_calendar, entries);
-            setListAdapter(caa);
-
-            view = super.onCreateView(li, container, si);
-            firstView = false;
+        int active = 0;
+        for( int i =0 ; i<SupporHolder.calendarCache.length; i++) {
+            if(SupporHolder.calendarCache[i]!=null)
+                active++;
         }
+        if (active!=0) {
+            entries = new CalendarEntry[active];
+            for (int i = 0; i < active; i++) {
+                entries[i] = SupporHolder.calendarCache[i];
+            }
+        }
+
+        CalendarListFragmentAdapter caa = new CalendarListFragmentAdapter(li, li.getContext(), R.layout.custom_row_calendar, entries);
+        caa.data=entries;
+        setListAdapter(caa);
+        view = super.onCreateView(li, container, si);
 
         return view;
     }
@@ -72,13 +77,20 @@ public class CalendarFragment extends ListFragment {
         return ff;
     }
 
-    public class CalendarEntry {
-        public String day;
-        public Float values[];
+    @Override
+    public void onClick(View v) {
 
-        public CalendarEntry(String day,  Float values[]){
-            this.day=day;
-            this.values=values;
+        switch (v.getId()) {
+            case R.id.row_custom_view : {
+
+                SupporHolder.currentDayID = ((CalendarRowBarView)v).getDateID();
+                SupporHolder.currentChaceDayID = ((CalendarRowBarView)v).getPositionDATECacheID();
+                SupporHolder.currentDay = ((CalendarRowBarView)v).getDate();
+                CalendarRowBarSelectAnimation crbanim = new CalendarRowBarSelectAnimation((CalendarRowBarView) v, 0);
+                crbanim.setDuration(650);
+                v.startAnimation(crbanim);
+                break;
+            }
         }
     }
 
@@ -87,7 +99,7 @@ public class CalendarFragment extends ListFragment {
         private int layoutResourceId;
         private Context context;
         private LayoutInflater li;
-        private CalendarEntry[] data;
+        public CalendarEntry[] data;
 
         public CalendarListFragmentAdapter(LayoutInflater li, Context context, int layoutResourceId, CalendarEntry data[]) {
             super(context, layoutResourceId, data);
@@ -101,12 +113,16 @@ public class CalendarFragment extends ListFragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             View row = convertView;
             if(row == null) {
-
                 row = li.inflate(layoutResourceId, parent, false);
                 TextView day = (TextView)row.findViewById(R.id.row_textView);
                 CalendarEntry entryDay = data[position];
                 CalendarRowBarView crow = (CalendarRowBarView)row.findViewById(R.id.row_custom_view);
+                crow.setOnClickListener(myself);
+
                 day.setText(entryDay.day);
+                crow.setValues(entryDay.values);
+                crow.setDate(entryDay.day);
+                crow.setPositionDATECacheID(position);
             }
             return row;
         }

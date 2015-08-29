@@ -5,6 +5,10 @@ package labelAPI;
  */
 public interface LabelAPIServiceCallbacks {
 
+    public void onFetchingData();
+
+    public void onReceivedData();
+
     public void onReceivedNullResponse();
 
     public void onSessionExpired();

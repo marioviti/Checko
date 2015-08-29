@@ -12,7 +12,7 @@ import android.util.Log;
 public class DBOpenHelper extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "LabelApiDatabaseV1.db";
-    public static int DB_V = 1;
+    public static int DB_V = 6;
 
     public static final String DB_TABLE_CAL = "calendar";
     public static final String CAL_COL_PK = "c_id";
@@ -68,17 +68,18 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL(DATABASE_DELETE_CAL);
-        db.execSQL(DATABASE_DELETE_PROD);
         db.execSQL(DATABASE_CREATE_CAL);
         db.execSQL(DATABASE_CREATE_PROD);
-
-        Log.d("DBonCreate", DATABASE_CREATE_PROD);
-        Log.d("DBonCreate",DATABASE_CREATE_CAL);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+        db.execSQL(DATABASE_DELETE_CAL);
+        db.execSQL(DATABASE_DELETE_PROD);
+        db.execSQL(DATABASE_CREATE_CAL);
+        db.execSQL(DATABASE_CREATE_PROD);
+
+        Log.d("onUpgrade","---------------database Upgraded");
     }
 }

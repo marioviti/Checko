@@ -70,6 +70,9 @@ public class LabelAPIHttpTask extends AsyncTask<String,String,JSONObject> {
         catch ( IOException e ) {
             e.printStackTrace(); status = LabelAPIProtocol.TASK_ERROR; LabelAPIProtocol.ERR_STACK.putString("LabelAPIHttpReq_"+taskID, "IOException");
         }
+        catch (Exception e) {
+            e.printStackTrace(); status = LabelAPIProtocol.TASK_ERROR; LabelAPIProtocol.ERR_STACK.putString("LabelAPIHttpReq_"+taskID, "Exception");
+        }
 
         if(status ==  LabelAPIProtocol.TASK_STARTED)
             this.status = LabelAPIProtocol.TASK_ALL_DONE;

@@ -39,10 +39,18 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //INITIATE DB
+        DBOpenHelper myOpenHelper = new DBOpenHelper(MainActivity.this, DBOpenHelper.DB_NAME, null, DBOpenHelper.DB_V);
+
+        //CONNECTION SESSION
+        labelAPIroute = new LabelAPIRouter(this, myOpenHelper, "mc896havn4wp7rf73yu5sxxs");
+        mainDialog = new Dialog(MainActivity.this);
+
         //RESTORE STATE
         if (savedInstanceState == null) {
             SupporHolder.si = null;
             DisplayMetrics metrics = getResources().getDisplayMetrics();
+            //labelAPIroute.sync();
             Log.d("onCreate", "---------------------------FIRST ACCESS METRICS: " + metrics.toString());
 
         }else {
@@ -50,13 +58,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
             SupporHolder.latestDayID = savedInstanceState.getInt("latestDateID");
         }
 
-        //INITIATE DB
-        DBOpenHelper myOpenHelper = new DBOpenHelper(MainActivity.this, DBOpenHelper.DB_NAME, null, DBOpenHelper.DB_V);
-        myOpenHelper.onCreate(myOpenHelper.getWritableDatabase());
-
-        //CONNECTION SESSION
-        labelAPIroute = new LabelAPIRouter(this, myOpenHelper, "mc896havn4wp7rf73yu5sxxs");
-        mainDialog = new Dialog(MainActivity.this);
+        labelAPIroute.sync();
 
         //FRAGMENT SESSION
         initiatePool();
@@ -100,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
     // OnTopDialogLauncher: gestione fragments annidiati: callback per visualizzazione dialog onTop
     @Override
-    public void lauchDialog() {
+    public void lauchDialog(int type) {
 
         if (!labelAPIroute.hasSessionStarted())
             labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
@@ -127,6 +129,16 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
                 break;
             }
         }
+    }
+
+    @Override
+    public void onFetchingData() {
+
+    }
+
+    @Override
+    public void onReceivedData() {
+        this.mainDialog.dismiss();
     }
 
     // LabelAPIServiceCallbacks
