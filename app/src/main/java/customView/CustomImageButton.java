@@ -19,9 +19,11 @@ public class CustomImageButton extends View {
     private float ratioImage; // width/height
     private Paint paint;
     private Bitmap image;
+    private Context caller;
 
     public CustomImageButton(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.caller = context;
         int type = attrs.getAttributeIntValue("http://schemas.android.com/apk/res-auto", "type", 0);
         paint = new Paint();
         switch (type) {
@@ -61,6 +63,11 @@ public class CustomImageButton extends View {
     }
 
     @Override
+    public boolean callOnClick() {
+        return super.callOnClick();
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         dimensionsW = getDefaultSize( getSuggestedMinimumWidth(), widthMeasureSpec );
         dimensionsH = getDefaultSize( getSuggestedMinimumHeight(), heightMeasureSpec );
@@ -68,11 +75,6 @@ public class CustomImageButton extends View {
         super.onMeasure(widthMeasureSpec,heightMeasureSpec);
     }
 
-    /**
-     * Implement this to do your drawing.
-     *
-     * @param canvas the canvas on which the background will be drawn
-     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);

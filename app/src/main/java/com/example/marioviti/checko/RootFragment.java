@@ -98,6 +98,12 @@ public class RootFragment extends Fragment implements FragmentSwapper {
                 fgt.commit();
                 this.currentFrag = pos;
                 return true;
+            }else {
+                fg = fgtPool.insertFragmentAtandReturn(PageFragment.newInstance("page", pos), pos);
+                fgt = fm.beginTransaction();
+                fgt.replace(R.id.fragment_placeholder, fg);
+                //fgt.addToBackStack(null);
+                fgt.commit();
             }
             return false;
         }
