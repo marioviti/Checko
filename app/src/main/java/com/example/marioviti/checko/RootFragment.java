@@ -31,6 +31,7 @@ public class RootFragment extends Fragment implements FragmentSwapper {
 
     public void onAttach(Activity activity) {
         myContext = (FragmentActivity) activity;
+        fm = myContext.getSupportFragmentManager();
         if(activity!=null)
             super.onAttach(activity);
     }
@@ -44,7 +45,6 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     @Override
     public View onCreateView (LayoutInflater li, ViewGroup container, Bundle si) {
 
-        Log.d("onCreateView", "---------------------------ROOT_FRAGMENT");
         View v = li.inflate(R.layout.root_fragment, container, false);
         initiatePool();
         // hack: per evitare che il primo fragment non sia riconosciuto come quello corrente
@@ -52,6 +52,7 @@ public class RootFragment extends Fragment implements FragmentSwapper {
         this.currentFrag=1;
         this.swapWith(0);
 
+        Log.d("onCreateView", "---------------------------ROOT_FRAGMENT");
         return v;
     }
 
@@ -75,14 +76,17 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     }
 
     /*
-    Sistema di interfacciamento per Fragment annidati: il RootFragment ritiene i Fragment
-    gestisce le transazioni FragmentTransaction dinamiche
-    */
+        Sistema di interfacciamento per Fragment annidati: il RootFragment ritiene i Fragment
+        gestisce le transazioni FragmentTransaction dinamiche
+        */
     @Override
     public boolean swapWith( int pos ) {
 
-        if(this.currentFrag!=pos) {
-            FragmentManager fm = myContext.getSupportFragmentManager();
+        if(this.currentFrag==pos) {
+            ((PageFragment)fgtPool.getAt(pos)).updateUI();
+            ((PageFragment)fgtPool.getAt(pos)).animate();
+        }
+        else{
             Fragment fg;
             FragmentTransaction fgt;
 
@@ -90,14 +94,13 @@ public class RootFragment extends Fragment implements FragmentSwapper {
             if (fg != null) {
                 fgt = fm.beginTransaction();
                 fgt.replace(R.id.fragment_placeholder, fg);
-                fgt.addToBackStack(null);
+                //fgt.addToBackStack(null);
                 fgt.commit();
                 this.currentFrag = pos;
                 return true;
             }
             return false;
         }
-
         return true;
     }
 

@@ -50,12 +50,14 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         if (savedInstanceState == null) {
             SupporHolder.si = null;
             DisplayMetrics metrics = getResources().getDisplayMetrics();
-            //labelAPIroute.sync();
             Log.d("onCreate", "---------------------------FIRST ACCESS METRICS: " + metrics.toString());
 
         }else {
             SupporHolder.latestDay = savedInstanceState.getString("latestDay");
             SupporHolder.latestDayID = savedInstanceState.getInt("latestDateID");
+            SupporHolder.currentDay = savedInstanceState.getString("currentDay");
+            SupporHolder.currentDayID = savedInstanceState.getInt("currentDayID");
+            SupporHolder.currentChaceDayID = savedInstanceState.getInt("currentChaceDayID");
         }
 
         labelAPIroute.sync();
@@ -89,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
         savedInstanceState.putString("latestDay", SupporHolder.latestDay);
         savedInstanceState.putInt("latestDateID", SupporHolder.latestDayID);
+        savedInstanceState.putString("currentDay", SupporHolder.currentDay);
+        savedInstanceState.putInt("currentDayID", SupporHolder.currentDayID);
+        savedInstanceState.putInt("currentChaceDayID", SupporHolder.currentChaceDayID);
 
         Log.d("onSaveInstanceState", "---------------------------MAIN_ACTIVITY");
     }
@@ -132,13 +137,17 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     }
 
     @Override
-    public void onFetchingData() {
-
+    public void onRefreshedData(int pos) {
+        if(pos!=-1) {
+            Log.d("onRefreshedData", "----------------------------data refreshed");
+            ((FragmentSwapper) (fgtPool.getAt(ROOT_FRAG))).swapWith(pos);
+        }
     }
 
     @Override
     public void onReceivedData() {
         this.mainDialog.dismiss();
+        viewPager.setCurrentItem(ROOT_FRAG);
     }
 
     // LabelAPIServiceCallbacks
@@ -148,12 +157,10 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         TextView text = (TextView) this.mainDialog.findViewById(R.id.dialog_text_view);
         if(text!=null)
             text.setText("Codice non valido, prova un'altro");
-
     }
 
     @Override
     public void onSessionExpired() {
-
         labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
     }
 

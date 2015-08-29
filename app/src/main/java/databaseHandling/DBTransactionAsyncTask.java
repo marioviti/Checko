@@ -18,11 +18,12 @@ import Support.SupporHolder;
  * Created by marioviti on 24/08/15.
  */
 
-public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, ContentValues> {
+public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Object> {
 
     private DBQueryManager caller;
     private int task;
     private DBOpenHelper myOpenHelper;
+    private Object reValues = null;
 
     public DBTransactionAsyncTask(DBQueryManager activity, DBOpenHelper myOpenHelper, int task){
         this.task = task;
@@ -173,7 +174,7 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Con
     }
 
     @Override
-    protected ContentValues doInBackground(ContentValues... params) {
+    protected Object doInBackground(ContentValues... params) {
         // FSA
         switch (task) {
 
@@ -205,7 +206,7 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Con
     }
 
     @Override
-    protected void onPostExecute(ContentValues result) {
+    protected void onPostExecute(Object result) {
         caller.manageQueryRes(result, task);
     }
 }

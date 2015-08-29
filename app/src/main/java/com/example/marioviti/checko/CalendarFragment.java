@@ -20,7 +20,6 @@ import customView.CalendarRowBarView;
  */
 public class CalendarFragment extends ListFragment implements View.OnClickListener{
 
-    private boolean firstView = true;
     private View view;
     private View.OnClickListener myself;
 
@@ -97,7 +96,6 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
     private class CalendarListFragmentAdapter extends ArrayAdapter<CalendarEntry> {
 
         private int layoutResourceId;
-        private Context context;
         private LayoutInflater li;
         public CalendarEntry[] data;
 
@@ -105,7 +103,6 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
             super(context, layoutResourceId, data);
             this.li = li;
             this.layoutResourceId = layoutResourceId;
-            this.context = context;
             this.data = data;
         }
 

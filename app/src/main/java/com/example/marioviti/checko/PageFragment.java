@@ -24,11 +24,9 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
     private CircularIndicator c;
     private CircularIndicatorAnimation ca;
     private View v;
-    private ArrayList<float[]> summariesCache = new ArrayList<>(10);
-
     public void onCreate(Bundle si) {
         super.onCreate(si);
-        //Log.d("onCreate", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
+        Log.d("onCreate", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
     }
 
     @Override
@@ -36,40 +34,35 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
 
         page = getArguments().getString("page");
         pos = getArguments().getInt("pos");
-        v = li.inflate(R.layout.page_fragment0, container, false);
 
-        switch (pos) {
-            case 0: {
-                v.setBackgroundColor(getResources().getColor(R.color.btn_color_type1));
-                break;
-            }
-            case 1: {
-                v.setBackgroundColor(getResources().getColor(R.color.btn_color_type2));
-                break;
-            }
-            case 2: {
-                v.setBackgroundColor(getResources().getColor(R.color.btn_color_type3));
-                break;
-            }
-            case 3: {
-                v.setBackgroundColor(getResources().getColor(R.color.btn_color_type4));
-                break;
-            }
-            case 4: {
-                v.setBackgroundColor(getResources().getColor(R.color.btn_color_type5));
-                break;
+        if(v==null) {
+            v = li.inflate(R.layout.page_fragment0, container, false);
+
+            switch (pos) {
+                case 0: {
+                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type1));
+                    break;
+                }
+                case 1: {
+                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type2));
+                    break;
+                }
+                case 2: {
+                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type3));
+                    break;
+                }
+                case 3: {
+                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type4));
+                    break;
+                }
+                case 4: {
+                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type5));
+                    break;
+                }
             }
         }
-
-
-        TextView tv = (TextView) v.findViewById(R.id.tvLabel);
-        //tv.setText(pos + " " + page);
-        if(SupporHolder.currentDayID!=-1)
-            tv.setText(SupporHolder.currentDay);
-        else
-            tv.setText("Starts Today");
-
         updateUI();
+        Log.d("onCreateView", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
         return v;
     }
 
@@ -100,6 +93,12 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         c.setAngle(0);
         ca = new CircularIndicatorAnimation(c,percent*360);
         ca.setDuration(1500);
+
+        TextView tv = (TextView) v.findViewById(R.id.tvLabel);
+        if(SupporHolder.currentDayID!=-1)
+            tv.setText(SupporHolder.currentDay);
+        else
+            tv.setText("Starts Today");
     }
 
     public float getPercent() {
@@ -128,6 +127,10 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         return ff;
     }
 
+    public void animate(){
+        c.startAnimation(ca);
+    }
+
     // Animazioni transizioni su transazioni Fragments
     @Override
     public Animation onCreateAnimation( int transit, boolean enter, int nextAnim ) {
@@ -147,7 +150,7 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
 
     @Override
     public void onAnimationEnd(Animation animation) {
-        c.startAnimation(ca);
+        animate();
     }
 
     @Override

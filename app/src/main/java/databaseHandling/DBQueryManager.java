@@ -9,5 +9,5 @@ public interface DBQueryManager {
 
     int INSERT = 0;
     int REFRESH_FETCH = 1;
-    void manageQueryRes(ContentValues res, int task);
+    void manageQueryRes(Object res, int task);
 }

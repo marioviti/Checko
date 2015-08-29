@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import Support.SupporHolder;
+import customView.CustomImageButton;
 import databaseHandling.DBOpenHelper;
 
 /**
@@ -42,11 +43,11 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
         Log.d("onCreateView", "---------------------------MENU_FRAGMENT");
 
         view = li.inflate(R.layout.menu_fragment, container, false);
-        Button btn0 = (Button) view.findViewById(R.id.frag_button_0),
-            btn1 = (Button) view.findViewById(R.id.frag_button_1),
-            btn2 = (Button) view.findViewById(R.id.frag_button_2),
-            btn3 = (Button) view.findViewById(R.id.frag_button_3),
-            btn4 = (Button) view.findViewById(R.id.frag_button_4);
+        CustomImageButton btn0 = (CustomImageButton) view.findViewById(R.id.frag_custom_button_0),
+            btn1 = (CustomImageButton) view.findViewById(R.id.frag_custom_button_1),
+            btn2 = (CustomImageButton) view.findViewById(R.id.frag_custom_button_2),
+            btn3 = (CustomImageButton) view.findViewById(R.id.frag_custom_button_3),
+            btn4 = (CustomImageButton) view.findViewById(R.id.frag_custom_button_4);
 
         btn0.setOnClickListener(this);
         btn0.setOnLongClickListener(this);
@@ -84,27 +85,27 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
 
         int vID = v.getId();
         switch (vID) {
-            case R.id.frag_button_0: {
+            case R.id.frag_custom_button_0: {
                 SupporHolder.globalTypeVariable = 0;
                 fgSwap.swapWith(0);
                 break;
             }
-            case  R.id.frag_button_1: {
+            case  R.id.frag_custom_button_1: {
                 SupporHolder.globalTypeVariable = 1;
                 fgSwap.swapWith(1);
                 break;
             }
-            case  R.id.frag_button_2: {
+            case  R.id.frag_custom_button_2: {
                 SupporHolder.globalTypeVariable = 2;
                 fgSwap.swapWith(2);
                 break;
             }
-            case  R.id.frag_button_3: {
+            case  R.id.frag_custom_button_3: {
                 SupporHolder.globalTypeVariable = 3;
                 fgSwap.swapWith(3);
                 break;
             }
-            case  R.id.frag_button_4: {
+            case  R.id.frag_custom_button_4: {
                 SupporHolder.globalTypeVariable = 4;
                 fgSwap.swapWith(4);
                 break;
@@ -115,32 +116,32 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
     @Override
     public boolean onLongClick(View v) {
         switch (v.getId()) {
-            case R.id.frag_button_0: {
+            case R.id.frag_custom_button_0: {
                 SupporHolder.globalTypeVariable = 0;
                 oTlauncher.lauchDialog(0);
                 break;
             }
 
-            case  R.id.frag_button_1: {
+            case  R.id.frag_custom_button_1: {
                 /// ASSURDO
                 SupporHolder.globalTypeVariable = 1;
                 oTlauncher.lauchDialog(1);
                 break;
             }
 
-            case  R.id.frag_button_2: {
+            case  R.id.frag_custom_button_2: {
                 SupporHolder.globalTypeVariable = 2;
                 oTlauncher.lauchDialog(2);
                 break;
             }
 
-            case  R.id.frag_button_3: {
+            case  R.id.frag_custom_button_3: {
                 SupporHolder.globalTypeVariable = 3;
                 oTlauncher.lauchDialog(3);
                 break;
             }
 
-            case  R.id.frag_button_4: {
+            case  R.id.frag_custom_button_4: {
                 SupporHolder.globalTypeVariable = 4;
                 oTlauncher.lauchDialog(4);
                 break;

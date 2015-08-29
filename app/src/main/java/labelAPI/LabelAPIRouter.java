@@ -168,16 +168,19 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
     }
 
     public void startDBTask (ContentValues values, int task) {
-
         new DBTransactionAsyncTask( this, this.dbOpener, task ).execute(values);
-
     }
 
     @Override
-    public void manageQueryRes(ContentValues res, int task) {
+    public void manageQueryRes(Object res, int task) {
 
         if(task == DBQueryManager.INSERT) {
+            // refresh data
             startDBTask(null, DBQueryManager.REFRESH_FETCH);
+        }
+        if(task == DBQueryManager.REFRESH_FETCH) {
+            //Signal upper UI using the LabelAPIServiceCallbacks
+            caller.onRefreshedData(SupporHolder.globalTypeVariable);
         }
     }
 
