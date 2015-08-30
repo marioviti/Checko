@@ -181,6 +181,8 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
         if(task == DBQueryManager.REFRESH_FETCH) {
             //Signal upper UI using the LabelAPIServiceCallbacks
             caller.onRefreshedData(SupporHolder.globalTypeVariable);
+            if(SupporHolder.currentChaceDayID==-1)
+                caller.onFirstAccess();
         }
     }
 

@@ -22,6 +22,7 @@ public class SupporHolder {
     public static int currentChaceDayID = -1;
     public static String currentDay = "";
     public static HashMap<String,float[]> summaryCalendarCache = new HashMap<>();
+    // e queste sono settate
     public static CalendarEntry[] calendarCache = new CalendarEntry[10];
     public static final int cacheDayLimit = 10;
 

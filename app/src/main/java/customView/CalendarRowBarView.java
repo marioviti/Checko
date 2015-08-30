@@ -85,8 +85,7 @@ public class CalendarRowBarView extends View {
         canvas.drawRect(recPercent[0] + recPercent[1] + recPercent[2], 0, (float) dimensionsW, (float) dimensionsH, paint[3]);
         canvas.drawRect(recPercent[0] + recPercent[1] + recPercent[2] + recPercent[3], 0, (float) dimensionsW, (float) dimensionsH, paint[4]);
         paintAlpha.setAlpha(alphaVal);
-        if ( this.getDateID() != SupporHolder.currentDayID)
-            canvas.drawRect(0, 0, (float) dimensionsW, (float) dimensionsH, paintAlpha);
+        canvas.drawRect(0, 0, (float) dimensionsW, (float) dimensionsH, paintAlpha);
     }
 
     public void setPositionDATECacheID(int pos) { this.CahceID = pos; }

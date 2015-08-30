@@ -13,5 +13,7 @@ public interface LabelAPIServiceCallbacks {
 
     public void onSessionExpired();
 
+    public void onFirstAccess();
+
     public void onHttpConnectionError();
 }

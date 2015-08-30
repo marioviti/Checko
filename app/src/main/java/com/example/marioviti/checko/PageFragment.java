@@ -62,16 +62,16 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
             }
         }
         updateUI();
-        Log.d("onCreateView", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
+        Log.d("onCreateView", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT:"+pos);
         return v;
     }
 
     public void updateUI() {
 
         float[] values = null;
-        String key = SupporHolder.summaryKey(SupporHolder.currentDayID, pos);
-        if(SupporHolder.summaryCalendarCache.containsKey(key)){
-            values = SupporHolder.summaryCalendarCache.get(key);
+        if(SupporHolder.currentChaceDayID!=-1) {
+            values = SupporHolder.calendarCache[SupporHolder.currentChaceDayID].summaries[pos];
+            Log.d("PageFragment", "updateUI\n" + SupporHolder.calendarCache[SupporHolder.currentChaceDayID].toString());
         }
 
         TextView tvCARB = (TextView) v.findViewById(R.id.text_CARB);
@@ -83,6 +83,11 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
             tvPROT.setText("Proteins\n"+values[1] + " gr");
             tvFAT.setText("Fats\n"+values[2] + " gr");
             tvCAL.setText("Calories\n"+values[3] + " kcal");
+        }else {
+            tvCARB.setText("Carbs");
+            tvPROT.setText("Proteins");
+            tvFAT.setText("Fats");
+            tvCAL.setText("Calories");
         }
         float percent = 0;
         if(SupporHolder.currentChaceDayID!=-1)

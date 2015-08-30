@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         if(pos!=-1) {
             Log.d("onRefreshedData", "----------------------------data refreshed");
             ((FragmentSwapper) (fgtPool.getAt(ROOT_FRAG))).swapWith(pos);
+            ((CalendarFragment)(fgtPool.getAt(CALEDAR_FRAG))).updateUI();
         }
     }
 
@@ -162,6 +163,13 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     @Override
     public void onSessionExpired() {
         labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
+    }
+
+    @Override
+    public void onFirstAccess() {
+        Dialog tutorial = new Dialog(MainActivity.this);
+        tutorial.setTitle("Benvenuto!");
+        tutorial.setContentView(R.layout.dialog_view);
     }
 
     @Override

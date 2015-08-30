@@ -86,7 +86,7 @@ public class RootFragment extends Fragment implements FragmentSwapper {
             ((PageFragment)fgtPool.getAt(pos)).updateUI();
             ((PageFragment)fgtPool.getAt(pos)).animate();
         }
-        else{
+        else {
             Fragment fg;
             FragmentTransaction fgt;
 
