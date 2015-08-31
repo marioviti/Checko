@@ -12,7 +12,7 @@ import android.util.Log;
 public class DBOpenHelper extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "LabelApiDatabaseV1.db";
-    public static int DB_V = 6;
+    public static int DB_V = 7;
 
     public static final String DB_TABLE_CAL = "calendar";
     public static final String CAL_COL_PK = "c_id";

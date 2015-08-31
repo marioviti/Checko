@@ -16,12 +16,12 @@
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:id="@+id/circular_indicator"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="10%"
+        android:text="0%"
         android:textSize="40sp"
         android:id="@+id/indicator_textView"
         android:layout_marginTop="75dp"
@@ -30,40 +30,99 @@
 
 
         <TextView
-            android:id="@+id/text_CARB"
+            android:id="@+id/text_CARB_label"
+            android:text="Carb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="28sp"
-            android:layout_marginLeft="30dp"
+            android:textSize="22sp"
+            android:layout_alignLeft="@id/circular_indicator"
             android:layout_below="@id/circular_indicator"/>
+
+            <TextView
+                android:id="@+id/text_CARB"
+                android:text="0gr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="22sp"
+                android:layout_marginLeft="6dp"
+                android:layout_toRightOf="@id/text_CARB_label"
+                android:layout_below="@id/circular_indicator"/>
+
         <TextView
-            android:id="@+id/text_PROT"
+            android:id="@+id/text_PROT_LABEL"
+            android:text="Prot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="28sp"
-            android:layout_marginLeft="30dp"
-            android:layout_below="@id/circular_indicator"
-            android:layout_toRightOf="@id/text_CARB"/>
+            android:layout_alignLeft="@id/circular_indicator"
+            android:textSize="22sp"
+            android:layout_below="@id/text_CARB"/>
+
+            <TextView
+                android:id="@+id/text_PROT"
+                android:text="0gr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:layout_marginLeft="11dp"
+                android:layout_toRightOf="@id/text_PROT_LABEL"
+                android:layout_below="@id/text_CARB"/>
+
         <TextView
-            android:id="@+id/text_FAT"
+            android:id="@+id/text_FAT_LABEL"
+            android:text="Fat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="28sp"
-            android:layout_marginLeft="30dp"
-            android:layout_below="@id/circular_indicator"
-            android:layout_toRightOf="@id/text_PROT"/>
+            android:textSize="22sp"
+            android:layout_alignLeft="@id/circular_indicator"
+            android:layout_below="@id/text_PROT"/>
+
+            <TextView
+                android:id="@+id/text_FAT"
+                android:text="0gr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="22sp"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@id/text_FAT_LABEL"
+                android:layout_below="@id/text_PROT"/>
+
         <TextView
-            android:id="@+id/text_CAL"
+            android:id="@+id/text_CAL_LABEL"
+            android:text="Cal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:textSize="28sp"
-            android:layout_marginLeft="30dp"
-            android:layout_below="@id/circular_indicator"
-            android:layout_toRightOf="@id/text_FAT"/>
+            android:textSize="22sp"
+            android:layout_alignLeft="@id/circular_indicator"
+            android:layout_below="@id/text_FAT"/>
+
+            <TextView
+                android:id="@+id/text_CAL"
+                android:text="0gr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="22sp"
+                android:layout_toRightOf="@id/text_CAL_LABEL"
+                android:layout_marginLeft="20dp"
+                android:layout_below="@id/text_FAT"/>
+
+    <customView.HistogramView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/page_histogram"
+        android:layout_marginLeft="4dp"
+        android:layout_alignTop="@+id/text_CARB_label"
+        android:layout_toRightOf="@+id/text_CARB_label"
+        android:layout_alignBottom="@+id/text_CAL"
+        android:layout_alignRight="@+id/circular_indicator"
+        android:layout_alignEnd="@+id/circular_indicator" />
 
 
 </RelativeLayout>

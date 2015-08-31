@@ -87,7 +87,7 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
                 " FROM " + DBOpenHelper.DB_TABLE_CAL +
                 " ORDER BY "+ DBOpenHelper.CAL_COL_PK +
                 " DESC LIMIT 1 ;";
-        Cursor cursor = rDb.rawQuery(rawQuery,null);
+        Cursor cursor = rDb.rawQuery(rawQuery, null);
         int columnIndexDATE = cursor.getColumnIndex(DBOpenHelper.CAL_COL_DATE);
         int columnIndexDATEID = cursor.getColumnIndex(DBOpenHelper.CAL_COL_PK);
         if (columnIndexDATE > -1) {
@@ -193,6 +193,12 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
         }
     }
 
+    private void firstLaunc() {
+        SupporHolder.calendarCache[0] = new CalendarEntry("Starts Today", new int [] {20,20,20,20,20,0},0,0);
+        SupporHolder.calendarCache[0].summaries = new float[][] {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+        SupporHolder.currentChaceDayID = 0;
+    }
+
     @Override
     protected Object doInBackground(ContentValues... params) {
         // FSA
@@ -218,6 +224,8 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
                     SQLiteDatabase db = myOpenHelper.getReadableDatabase();
                     createCalendar(db);
                     createSummary(db);
+                } else {
+                    firstLaunc();
                 }
                 break;
             }

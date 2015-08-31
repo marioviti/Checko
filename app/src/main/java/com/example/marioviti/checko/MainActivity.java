@@ -1,6 +1,7 @@
 package com.example.marioviti.checko;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import Support.SupporHolder;
 import databaseHandling.DBOpenHelper;
@@ -105,6 +110,27 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         Log.d("onDestroy", "---------------------------MAIN_ACTIVITY");
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (scanningResult != null) {
+
+            String scanContent = scanningResult.getContents();
+            String scanFormat = scanningResult.getFormatName();
+            String GTIN = scanContent;
+            labelAPIroute.createSessionArrayURL(GTIN);
+            labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_ARRAY_REQ);
+        }
+        else{
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "No scan data received!", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
+    }
+
     // OnTopDialogLauncher: gestione fragments annidiati: callback per visualizzazione dialog onTop
     @Override
     public void lauchDialog(int type) {
@@ -112,12 +138,14 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         if (!labelAPIroute.hasSessionStarted())
             labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
 
-        this.mainDialog.setTitle("Dialog Title");
+        this.mainDialog.setTitle("Inserisci un novo alimento");
         this.mainDialog.setContentView(R.layout.dialog_view);
         TextView text = (TextView)  this.mainDialog.findViewById(R.id.dialog_text_view);
-        text.setText("This is the text in my dialog");
-        Button btn = (Button)  this.mainDialog.findViewById(R.id.dialog_button);
-        btn.setOnClickListener(this);
+        text.setText("Inserisci il codice maunalmente o scannerizza un codice a barre");
+        Button btn1 = (Button)  this.mainDialog.findViewById(R.id.dialog_button);
+        Button bt2 = (Button)  this.mainDialog.findViewById(R.id.dialog_scan_button);
+        btn1.setOnClickListener(this);
+        bt2.setOnClickListener(this);
         this.mainDialog.show();
     }
 
@@ -133,6 +161,10 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
                 labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_ARRAY_REQ);
                 break;
             }
+            case(R.id.dialog_scan_button) : {
+                IntentIntegrator scanIntegrator = new IntentIntegrator(this);
+                scanIntegrator.initiateScan();
+            }
         }
     }
 
@@ -141,7 +173,10 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         if(pos!=-1) {
             Log.d("onRefreshedData", "----------------------------data refreshed");
             ((FragmentSwapper) (fgtPool.getAt(ROOT_FRAG))).swapWith(pos);
-            ((CalendarFragment)(fgtPool.getAt(CALEDAR_FRAG))).updateUI();
+            boolean calendarUpdate= ((CalendarFragment)(fgtPool.getAt(CALEDAR_FRAG))).updateDayEntry(SupporHolder.currentChaceDayID);
+            if(!calendarUpdate) {
+                fgtPool.insertFragmentAtandReturn(CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG), CALEDAR_FRAG);
+            }
         }
     }
 
@@ -165,11 +200,27 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
     }
 
+    private Dialog tutorial;
+    private int pages = 0;
+
     @Override
     public void onFirstAccess() {
-        Dialog tutorial = new Dialog(MainActivity.this);
+        tutorial = new Dialog(MainActivity.this);
         tutorial.setTitle("Benvenuto!");
-        tutorial.setContentView(R.layout.dialog_view);
+        tutorial.setContentView(R.layout.tutorial_layout);
+        TextView text = (TextView)  tutorial.findViewById(R.id.tutorial_textView);
+        text.setText("Benvenuto in Chefcheck\n\n AVANTI ->");
+        text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pages ++;
+                if(pages == 1)
+                    ((TextView)v).setText("Per inserire un alimento tenere\npremuto uno dei 5 tasti\n\n FINE");
+                if(pages == 2)
+                    tutorial.dismiss();
+            }
+        });
+        tutorial.show();
     }
 
     @Override

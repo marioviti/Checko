@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import Support.SupporHolder;
 import customView.CircularIndicator;
 import customView.CircularIndicatorAnimation;
+import customView.HistogramAnimation;
+import customView.HistogramView;
 
 
 public class PageFragment extends Fragment implements Animation.AnimationListener{
@@ -23,6 +25,8 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
     private String page;
     private CircularIndicator c;
     private CircularIndicatorAnimation ca;
+    private HistogramView hv;
+    private HistogramAnimation ha;
     private View v;
     public void onCreate(Bundle si) {
         super.onCreate(si);
@@ -62,54 +66,49 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
             }
         }
         updateUI();
-        Log.d("onCreateView", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT:"+pos);
+        Log.d("onCreateView", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT:" + pos);
         return v;
     }
 
     public void updateUI() {
 
+        TextView tvCARB = (TextView) v.findViewById(R.id.text_CARB),
+                tvPROT = (TextView) v.findViewById(R.id.text_PROT),
+                tvFAT = (TextView) v.findViewById(R.id.text_FAT),
+                tvCAL = (TextView) v.findViewById(R.id.text_CAL);
+        TextView tv = (TextView) v.findViewById(R.id.tvLabel);
+        TextView tvIndicator = (TextView) v.findViewById(R.id.indicator_textView);
+        hv = (HistogramView) v.findViewById(R.id.page_histogram);
+
+
+        float percent = 0;
         float[] values = null;
         if(SupporHolder.currentChaceDayID!=-1) {
-            values = SupporHolder.calendarCache[SupporHolder.currentChaceDayID].summaries[pos];
-            Log.d("PageFragment", "updateUI\n" + SupporHolder.calendarCache[SupporHolder.currentChaceDayID].toString());
-        }
 
-        TextView tvCARB = (TextView) v.findViewById(R.id.text_CARB);
-        TextView tvPROT = (TextView) v.findViewById(R.id.text_PROT);
-        TextView tvFAT = (TextView) v.findViewById(R.id.text_FAT);
-        TextView tvCAL = (TextView) v.findViewById(R.id.text_CAL);
-        if(values!=null) {
-            tvCARB.setText("Carbs\n"+values[0] + " gr");
-            tvPROT.setText("Proteins\n"+values[1] + " gr");
-            tvFAT.setText("Fats\n"+values[2] + " gr");
-            tvCAL.setText("Calories\n"+values[3] + " kcal");
-        }else {
-            tvCARB.setText("Carbs");
-            tvPROT.setText("Proteins");
-            tvFAT.setText("Fats");
-            tvCAL.setText("Calories");
+            values = SupporHolder.calendarCache[SupporHolder.currentChaceDayID].summaries[pos];
+            percent = getPercent(SupporHolder.calendarCache[SupporHolder.currentChaceDayID].values);
+            tv.setText(SupporHolder.currentDay);
+            tvCARB.setText(values[0] + "gr");
+            tvPROT.setText(values[1] + "gr");
+            tvFAT.setText(values[2] + "gr");
+            tvCAL.setText(values[3] + "kcal");
+            tvIndicator.setText(Math.ceil(percent * 100) + "%");
+
+            ha = new HistogramAnimation(hv,values);
+            ha.setDuration(1500);
         }
-        float percent = 0;
-        if(SupporHolder.currentChaceDayID!=-1)
-            percent = getPercent();
-        TextView tvIndicator = (TextView) v.findViewById(R.id.indicator_textView);
-        tvIndicator.setText(Math.ceil(percent * 100)+"%");
+        else {
+            tv.setText("Starts Today");
+        }
         c = (CircularIndicator) v.findViewById(R.id.circular_indicator);
         c.setAngle(0);
         ca = new CircularIndicatorAnimation(c,percent*360);
         ca.setDuration(1500);
-
-        TextView tv = (TextView) v.findViewById(R.id.tvLabel);
-        if(SupporHolder.currentDayID!=-1)
-            tv.setText(SupporHolder.currentDay);
-        else
-            tv.setText("Starts Today");
     }
 
-    public float getPercent() {
-        int[] values = SupporHolder.calendarCache[SupporHolder.currentChaceDayID].values;
+    public float getPercent(int [] values) {
         int sum = 0;
-        for (int i=0; i< values.length-1; i++) {
+        for (int i=0; i<5; i++) {
             sum+=values[i];
         }
         return (float)(values[this.pos]/(float)sum);
@@ -134,6 +133,7 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
 
     public void animate(){
         c.startAnimation(ca);
+        hv.startAnimation(ha);
     }
 
     // Animazioni transizioni su transazioni Fragments
@@ -155,7 +155,8 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
 
     @Override
     public void onAnimationEnd(Animation animation) {
-        animate();
+        if(v!=null)
+            animate();
     }
 
     @Override

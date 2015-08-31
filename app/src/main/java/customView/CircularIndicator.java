@@ -37,7 +37,7 @@ public class CircularIndicator extends View {
         back_paint.setStyle(Paint.Style.STROKE);
         back_paint.setStrokeWidth(strokeWidth);
         back_paint.setColor(Color.BLACK);
-        back_paint.setAlpha(30);
+        back_paint.setAlpha(50);
 
         fore_angle = 356;
         back_angle = 360;

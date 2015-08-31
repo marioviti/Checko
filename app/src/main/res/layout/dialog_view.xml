@@ -1,19 +1,26 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+<GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_gravity="center_horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:columnCount="4"
+    android:rowCount="5">
 
     <TextView
-        android:id="@+id/dialog_text_view"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:padding="10dp"
-        android:text="welcome" />
+        android:text="New Text"
+        android:id="@+id/dialog_text_view"
+        android:layout_row="0"
+        android:layout_column="1"
+        android:layout_columnSpan="3"/>
 
 
     <EditText
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
@@ -22,12 +29,31 @@
         android:id="@+id/dialog_editText"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/dialog_text_view"
-        android:layout_toStartOf="@+id/dialog_text_view" />
+        android:layout_toStartOf="@+id/dialog_text_view"
+        android:layout_row="2"
+        android:layout_column="1"
+        android:layout_columnSpan="2"/>
 
     <Button
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
         android:id="@+id/dialog_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="connect"/>
+        android:text="insert"
+        android:layout_row="2"
+        android:layout_column="3" />
 
-</LinearLayout>
+    <Button
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:id="@+id/dialog_scan_button"
+        android:layout_height="wrap_content"
+        android:text="scan"
+        android:layout_row="4"
+        android:layout_column="1"
+        android:layout_columnSpan="3" />
+
+
+</GridLayout>

@@ -93,12 +93,19 @@ public class CalendarRowBarView extends View {
     public int getPositionDATECacheID() { return this.CahceID; }
 
     //Animation Handles
-    public int getAlphaVal() {
-        return this.alphaVal;
-    }
+    public int getAlphaVal() { return this.alphaVal; }
 
     public void setAlphaVal( int alphaVal) {
         this.alphaVal = alphaVal;
+    }
+
+    //Update Animation Handles
+    public int[] getValues() {
+        return this.settedValues;
+    }
+
+    public void setValues (int [] settedValues) {
+        this.settedValues = settedValues;
     }
 
     //Utility
@@ -106,13 +113,7 @@ public class CalendarRowBarView extends View {
         return settedValues[5];
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setValues (int [] settedValues) {
-        this.settedValues = settedValues;
-    }
+    public String getDate() { return date; }
 
     public void setDate (String date) {
         this.date = date;

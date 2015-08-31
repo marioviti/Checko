@@ -19,7 +19,7 @@ import customView.CalendarRowBarSelectAnimation;
 import customView.CalendarRowBarView;
 
 /**
- * Created by marioviti on 24/08/15.
+ * Overview: Sottoclasse di ListFragment per l'implementazione del calendario.
  */
 public class CalendarFragment extends ListFragment implements View.OnClickListener{
 
@@ -50,12 +50,7 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
     @Override
     public View onCreateView (LayoutInflater li, ViewGroup container, Bundle si) {
 
-        // Get references to UI widgets
-        Log.d("onCreateView", "---------------------------CALENDAR_FRAGMENT");
-
-        CalendarEntry[] entries = new CalendarEntry[1];
-        entries[0] = new CalendarEntry("today", new int[] {20,20,20,20,20,0},0,0);
-
+        CalendarEntry[] entries = null;
         int active = 0;
         for( int i =0; i<SupporHolder.calendarCache.length; i++) {
             if(SupporHolder.calendarCache[i]!=null)
@@ -67,32 +62,22 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
                 entries[i] = SupporHolder.calendarCache[i];
             }
         }
-
         caa = new CalendarListFragmentAdapter(li, li.getContext(), R.layout.custom_row_calendar, entries);
         caa.data=entries;
         setListAdapter(caa);
         view = super.onCreateView(li, container, si);
 
+        Log.d("onCreateView", "---------------------------CALENDAR_FRAGMENT");
+
         return view;
     }
 
-    public boolean updateUI() {
-        if (view==null){return false;}
+    public boolean updateDayEntry (int currentDayCacheId ) {
 
-        CalendarEntry[] entries = caa.data;
-        int active = 0;
-        for( int i =0 ; i<SupporHolder.calendarCache.length; i++) {
-            if(SupporHolder.calendarCache[i]!=null)
-                active++;
-        }
-        if (active!=0) {
-            entries = new CalendarEntry[active];
-            for (int i = 0; i < active; i++) {
-                entries[i] = SupporHolder.calendarCache[i];
-            }
-        }
-        caa.data=entries;
-        caa.notifyDataSetChanged();
+        if (view==null){return false;}
+        CalendarRowBarView v = caa.getViewRow(currentDayCacheId);
+        v.setValues(SupporHolder.calendarCache[currentDayCacheId].values);
+        v.requestLayout();
         return true;
     }
 
@@ -122,6 +107,9 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
         }
     }
 
+    /*
+    EFFECTS: animazioni on touch delle entries del calendario
+     */
     public void animateCalendar (CalendarRowBarView in, CalendarRowBarView out){
         if(in.getPositionDATECacheID()!=out.getPositionDATECacheID()) {
             CalendarRowBarSelectAnimation crbanimIn = new CalendarRowBarSelectAnimation(in, 0);
@@ -138,7 +126,11 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
             }
         }
     }
+    /*
+    OVERVIEW: sottoclasse dell ArrayAdapter.
 
+    MODIFY: assegna Listener agli items del calendar rendendoli cliccabili.
+     */
     private class CalendarListFragmentAdapter extends ArrayAdapter<CalendarEntry> {
 
         private int layoutResourceId;
