@@ -66,14 +66,14 @@ public class CalendarRowBarView extends View {
     private void convertPercentage() {
 
         float sum = 0;
-        for(int i = 0;i<N; i++)
+        for(int i = 0; i<N; i++)
             sum+=(float)rec[i];
         for(int i = 0;i<N; i++) {
             recPercent[i] = ((float) rec[i] / sum) * (float) dimensionsW;
         }
     }
     @Override
-    protected void onDraw( Canvas canvas ) {
+    protected void onDraw(Canvas canvas) {
 
         if(settedValues!=null)
             rec = settedValues;

@@ -32,6 +32,8 @@ public class SolidFragmentPool {
         return true;
     }
 
+    public int getCurr() { return curr; }
+
     public Fragment getAt (int i) {
 
         if(i>=0 && i<length)

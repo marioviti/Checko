@@ -27,6 +27,10 @@ import labelAPI.LabelAPIRouter;
 import labelAPI.LabelAPIServiceCallbacks;
 import labelAPI.LabelAPIProtocol;
 
+
+/**
+ *  OVERVIEW: MainActivity, sottoclasse della AppCompatActivity, implementa le interfacce che contengono le callback ai vari fragment annidati
+ */
 public class MainActivity extends AppCompatActivity implements FragmentSwapper, OnTopDialogLauncher, View.OnClickListener, LabelAPIServiceCallbacks{
 
     private ViewPager viewPager;
@@ -38,13 +42,22 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     private LabelAPIRouter labelAPIroute;
     private Dialog mainDialog;
 
+    /**
+     * OVERVIEW: Creazione/ripristino del database con l'uso dell'helper.
+     * Creazione della sessione per l'accesso al servizio LabelAPI.
+     * Inizializza la Pool di Fragment.
+     * Restore dello stato utilizzando le variabili di stato primitive nel Bundle.
+     *
+     * MODIFIES: SupportHolder via LabelAPIRouter
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //INITIATE DB
         DBOpenHelper myOpenHelper = new DBOpenHelper(MainActivity.this, DBOpenHelper.DB_NAME, null, DBOpenHelper.DB_V);
 
         //CONNECTION SESSION
@@ -125,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         }
         else{
             Toast toast = Toast.makeText(getApplicationContext(),
-                    "No scan data received!", Toast.LENGTH_SHORT);
+                    "Errore scansione, nessun dato ricevuto", Toast.LENGTH_SHORT);
             toast.show();
         }
 
@@ -138,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         if (!labelAPIroute.hasSessionStarted())
             labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
 
-        this.mainDialog.setTitle("Inserisci un novo alimento");
+        this.mainDialog.setTitle("Inserisci un nuovo alimento");
         this.mainDialog.setContentView(R.layout.dialog_view);
         TextView text = (TextView)  this.mainDialog.findViewById(R.id.dialog_text_view);
         text.setText("Inserisci il codice maunalmente o scannerizza un codice a barre");
@@ -168,6 +181,10 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         }
     }
 
+    /**
+     * Overview: Callback fornita per il LabelAPIRouter.
+     * Chiamata al ritorno dal task di refresh del SupporHolder.
+     */
     @Override
     public void onRefreshedData(int pos) {
         if(pos!=-1) {
@@ -180,13 +197,22 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         }
     }
 
+    /**
+     * Overview: Callback fornita per il LabelAPIRouter.
+     * Chiamata al ritorno dal task di connessione del client HTTP.
+     * Il task ha ricevuto dati che possono essere visualizzati.
+     */
     @Override
     public void onReceivedData() {
         this.mainDialog.dismiss();
         viewPager.setCurrentItem(ROOT_FRAG);
     }
 
-    // LabelAPIServiceCallbacks
+    /**
+     * Overview: Callback fornita per il LabelAPIRouter.
+     * Chiamata al ritorno dal task di connessione del client HTTP.
+     * Il task NON ha ricevuto dati che possono essere visualizzati.
+     */
     @Override
     public void onReceivedNullResponse() {
 
@@ -195,9 +221,24 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
             text.setText("Codice non valido, prova un'altro");
     }
 
+    /**
+     * Overview: Callback fornita per il LabelAPIRouter.
+     * La sessione non è più valida, ne viene richiesta una nuova.
+     */
     @Override
     public void onSessionExpired() {
         labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
+    }
+
+    /**
+     * Overview: Callback fornita per il LabelAPIRouter.
+     * Il task HTTP ha ricevuto un errore <= codice risposta!= 200, OK
+     */
+    @Override
+    public void onHttpConnectionError() {
+        TextView text = (TextView) this.mainDialog.findViewById(R.id.dialog_text_view);
+        if(text!=null)
+            text.setText("Errore Connessione non presente");
     }
 
     private Dialog tutorial;
@@ -223,13 +264,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         tutorial.show();
     }
 
-    @Override
-    public void onHttpConnectionError() {
 
-        TextView text = (TextView) this.mainDialog.findViewById(R.id.dialog_text_view);
-        if(text!=null)
-            text.setText("Errore Connessione non presente");
-    }
 
     private static void initiatePool() {
 
@@ -239,8 +274,14 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         fgtPool.insertFragment(CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG ));
     }
 
-    // FragmentSwapper: Metodo di interfacciamento fra ROOT_FRAG e MainActiviy.
-    // La MainActiviy comprendendo il pageAdapeter può voltare le pagine mentre il ROOT fragment ne cambia il contenuto.
+    /**
+     * OVERVIEW: implementazione del metodo fornito dall'interfaccia FragmentSwapper:
+     * FragmentSwapper: è un interfaccia usata in cascata, il chiamante che implementa l'interfaccia
+     * si interfaccia con una classe che implementa a sua volta l'interfaccia.
+     *
+     * Metodo di interfacciamento fra ROOT_FRAG e MainActiviy.
+     * La MainActiviy comprendendo il pageAdapeter può voltare le pagine mentre il ROOT fragment ne cambia il contenuto.
+     */
     @Override
     public boolean swapWith(int pos) {
 
@@ -251,7 +292,10 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         return ((FragmentSwapper)(fgtPool.getAt(ROOT_FRAG))).swapWith(pos);
     }
 
-    // CLASSE PRIVATA: gestione dei fragment ritenuti dall'activity
+    /**
+     * OVERVIEW: Sottoclasse del FragmentPagerAdapter. gestione dei fragment ritenuti dall'activity
+     * con l'uso della fragmentPool
+     */
     private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
         private int fragmentCount = PAG_NUM;
@@ -266,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         }
 
         public int getItemPosition (Object object) {
-            return POSITION_UNCHANGED;
+            return fgtPool.getCurr();
         }
 
         @Override
