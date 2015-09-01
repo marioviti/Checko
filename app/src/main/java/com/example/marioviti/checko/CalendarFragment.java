@@ -101,12 +101,26 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
                 SupporHolder.currentDayID = ((CalendarRowBarView)v).getDateID();
                 SupporHolder.currentChaceDayID = ((CalendarRowBarView)v).getPositionDATECacheID();
                 SupporHolder.currentDay = ((CalendarRowBarView)v).getDate();
-                animateCalendar ((CalendarRowBarView)v,caa.getViewRow(oldChaceDayID));
+                animateCalendar((CalendarRowBarView) v, caa.getViewRow(oldChaceDayID));
+                int pos = calculateMainofTheDay();
+                caller.swapWith(pos, false);
                 break;
             }
         }
     }
 
+    private int calculateMainofTheDay() {
+        int[] values = SupporHolder.calendarCache[SupporHolder.currentChaceDayID].values;
+        int max = 0;
+        int j = 0;
+        for (int i=0; i<values.length-1; i++) {
+            if(values[i]>max) {
+                max = values[i];
+                j=i;
+            }
+        }
+        return j;
+    }
     /*
     EFFECTS: animazioni on touch delle entries del calendario
      */

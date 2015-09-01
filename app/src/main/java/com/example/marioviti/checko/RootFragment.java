@@ -50,7 +50,7 @@ public class RootFragment extends Fragment implements FragmentSwapper {
         // hack: per evitare che il primo fragment non sia riconosciuto come quello corrente
         // setto quello corrente a 1 != 0 in modo che venga settato
         this.currentFrag=1;
-        this.swapWith(0);
+        this.swapWith(0,true);
 
         Log.d("onCreateView", "---------------------------ROOT_FRAGMENT");
         return v;
@@ -80,7 +80,7 @@ public class RootFragment extends Fragment implements FragmentSwapper {
         gestisce le transazioni FragmentTransaction dinamiche
         */
     @Override
-    public boolean swapWith( int pos ) {
+    public boolean swapWith( int pos , boolean withSroll ) {
 
         if(this.currentFrag==pos) {
             ((PageFragment)fgtPool.getAt(pos)).updateUI();

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     private static final int ROOT_FRAG = 1;
     private static final int CALEDAR_FRAG = 2;
     private static int PAG_NUM = 3;
-    private static SolidFragmentPool fgtPool;
+    private static SolidFragmentPool fgtPool = null;
     private LabelAPIRouter labelAPIroute;
     private Dialog mainDialog;
 
@@ -77,17 +77,19 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
             SupporHolder.currentDayID = savedInstanceState.getInt("currentDayID");
             SupporHolder.currentChaceDayID = savedInstanceState.getInt("currentChaceDayID");
         }
-
         labelAPIroute.sync();
 
-        //FRAGMENT SESSION
-        initiatePool();
+        Log.d("onCreate", "---------------------------MAIN_ACTIVITY");
+    }
+
+    private void updateUI() {
+        if(fgtPool==null) {
+            initiatePool();
+        }
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         FragmentManager fm = getSupportFragmentManager();
         PagerAdapter adapterViewPager = new MyFragmentPagerAdapter(fm);
         viewPager.setAdapter(adapterViewPager);
-
-        Log.d("onCreate", "---------------------------MAIN_ACTIVITY");
     }
 
     @Override
@@ -189,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     public void onRefreshedData(int pos) {
         if(pos!=-1) {
             Log.d("onRefreshedData", "----------------------------data refreshed");
-            ((FragmentSwapper) (fgtPool.getAt(ROOT_FRAG))).swapWith(pos);
+            ((FragmentSwapper) (fgtPool.getAt(ROOT_FRAG))).swapWith(pos,true);
             boolean calendarUpdate= ((CalendarFragment)(fgtPool.getAt(CALEDAR_FRAG))).updateDayEntry(SupporHolder.currentChaceDayID);
             if(!calendarUpdate) {
                 fgtPool.insertFragmentAtandReturn(CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG), CALEDAR_FRAG);
@@ -228,6 +230,11 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     @Override
     public void onSessionExpired() {
         labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
+    }
+
+    @Override
+    public void onSync() {
+        updateUI();
     }
 
     /**
@@ -283,13 +290,13 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
      * La MainActiviy comprendendo il pageAdapeter può voltare le pagine mentre il ROOT fragment ne cambia il contenuto.
      */
     @Override
-    public boolean swapWith(int pos) {
+    public boolean swapWith(int pos,boolean withScroll) {
+        if(withScroll)
+            viewPager.setCurrentItem(ROOT_FRAG);
 
-        viewPager.setCurrentItem(ROOT_FRAG);
         if(fgtPool.getAt(ROOT_FRAG)==null)
             fgtPool.insertFragmentAtandReturn(RootFragment.newInstance("root_fragment", ROOT_FRAG), ROOT_FRAG);
-
-        return ((FragmentSwapper)(fgtPool.getAt(ROOT_FRAG))).swapWith(pos);
+            return ((FragmentSwapper)(fgtPool.getAt(ROOT_FRAG))).swapWith(pos,true);
     }
 
     /**

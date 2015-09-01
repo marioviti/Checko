@@ -87,27 +87,27 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
         switch (vID) {
             case R.id.frag_custom_button_0: {
                 SupporHolder.globalTypeVariable = 0;
-                fgSwap.swapWith(0);
+                fgSwap.swapWith(0,true);
                 break;
             }
             case  R.id.frag_custom_button_1: {
                 SupporHolder.globalTypeVariable = 1;
-                fgSwap.swapWith(1);
+                fgSwap.swapWith(1,true);
                 break;
             }
             case  R.id.frag_custom_button_2: {
                 SupporHolder.globalTypeVariable = 2;
-                fgSwap.swapWith(2);
+                fgSwap.swapWith(2,true);
                 break;
             }
             case  R.id.frag_custom_button_3: {
                 SupporHolder.globalTypeVariable = 3;
-                fgSwap.swapWith(3);
+                fgSwap.swapWith(3,true);
                 break;
             }
             case  R.id.frag_custom_button_4: {
                 SupporHolder.globalTypeVariable = 4;
-                fgSwap.swapWith(4);
+                fgSwap.swapWith(4,true);
                 break;
             }
         }

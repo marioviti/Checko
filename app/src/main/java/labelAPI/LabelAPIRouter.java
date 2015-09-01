@@ -184,9 +184,15 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
             if(SupporHolder.latestDayID==-1)
                 caller.onFirstAccess();
         }
+        if(task == DBQueryManager.REFRESH_FETCH_SYNC) {
+            //Signal upper UI using the LabelAPIServiceCallbacks
+            caller.onSync();
+            if(SupporHolder.latestDayID==-1)
+                caller.onFirstAccess();
+        }
     }
 
     public void sync() {
-        startDBTask(null,DBQueryManager.REFRESH_FETCH);
+        startDBTask(null,DBQueryManager.REFRESH_FETCH_SYNC);
     }
 }

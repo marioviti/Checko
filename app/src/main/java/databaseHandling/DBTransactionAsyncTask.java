@@ -229,6 +229,21 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
                 }
                 break;
             }
+
+            case DBQueryManager.REFRESH_FETCH_SYNC : {
+
+                if(SupporHolder.latestDayID==-1)
+                    checkCurrentDay();
+                // uso dell'effetto collaterale
+                if(SupporHolder.latestDayID!=-1) {
+                    SQLiteDatabase db = myOpenHelper.getReadableDatabase();
+                    createCalendar(db);
+                    createSummary(db);
+                } else {
+                    firstLaunc();
+                }
+                break;
+            }
         }
         return null;
     }
