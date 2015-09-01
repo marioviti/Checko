@@ -27,19 +27,18 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     private static int PAG_NUM = 5;
     private static FragmentManager fm;
     private static FragmentActivity myContext;
-    private int currentFrag;
 
     public void onAttach(Activity activity) {
+
         myContext = (FragmentActivity) activity;
         fm = myContext.getSupportFragmentManager();
-        if(activity!=null)
-            super.onAttach(activity);
+        super.onAttach(activity);
     }
 
     @Override
     public void onCreate(Bundle si) {
         super.onCreate(si);
-        Log.d("onCreate", "---------------------------ROOT_FRAGMENT");
+        Log.d("onCreate", "---------------------------ROOT_FRAGMENT"+this.getTag());
     }
 
     @Override
@@ -49,7 +48,7 @@ public class RootFragment extends Fragment implements FragmentSwapper {
         initiatePool();
         // hack: per evitare che il primo fragment non sia riconosciuto come quello corrente
         // setto quello corrente a 1 != 0 in modo che venga settato
-        this.currentFrag=1;
+        this.fgtPool.setCurr(1);
         this.swapWith(0,true);
 
         Log.d("onCreateView", "---------------------------ROOT_FRAGMENT");
@@ -82,30 +81,28 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     @Override
     public boolean swapWith( int pos , boolean withSroll ) {
 
-        if(this.currentFrag==pos) {
+        if( fgtPool.getCurr()==pos ) {
             ((PageFragment)fgtPool.getAt(pos)).updateUI();
             ((PageFragment)fgtPool.getAt(pos)).animate();
         }
         else {
-            Fragment fg;
+            Fragment fgIn, fgOut;
             FragmentTransaction fgt;
-
-            fg = fgtPool.getAt(pos);
-            if (fg != null) {
-                fgt = fm.beginTransaction();
-                fgt.replace(R.id.fragment_placeholder, fg);
-                //fgt.addToBackStack(null);
-                fgt.commit();
-                this.currentFrag = pos;
-                return true;
-            }else {
-                fg = fgtPool.insertFragmentAtandReturn(PageFragment.newInstance("page", pos), pos);
-                fgt = fm.beginTransaction();
-                fgt.replace(R.id.fragment_placeholder, fg);
-                //fgt.addToBackStack(null);
-                fgt.commit();
+            fgIn = fgtPool.getAt(pos);
+            fgOut = fgtPool.getAt(fgtPool.getCurr());
+            fgt = fm.beginTransaction();
+            if (fgIn == null) {
+                fgIn = fgtPool.insertFragmentAtandReturn(PageFragment.newInstance("page", pos), pos);
             }
-            return false;
+            if(fgOut == null) {
+                fgt.add(R.id.fragment_placeholder,fgIn,fgIn.getTag());
+            } else {
+                fgt.remove(fgOut);
+                fgt.add(R.id.fragment_placeholder,fgIn,fgIn.getTag());
+            }
+            //fgt.replace(R.id.fragment_placeholder, fg);
+            fgt.commit();
+            fgtPool.setCurr(pos);
         }
         return true;
     }

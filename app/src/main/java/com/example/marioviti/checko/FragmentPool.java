@@ -36,6 +36,10 @@ public class FragmentPool {
         return true;
     }
 
+    public int getCurr () { return curr; }
+
+    public void setCurr (int curr) { this.curr = curr; }
+
     public Fragment getAt (int i) {
 
         if(i>=0 && i<length)

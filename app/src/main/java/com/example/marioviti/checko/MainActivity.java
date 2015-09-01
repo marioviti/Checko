@@ -34,11 +34,12 @@ import labelAPI.LabelAPIProtocol;
 public class MainActivity extends AppCompatActivity implements FragmentSwapper, OnTopDialogLauncher, View.OnClickListener, LabelAPIServiceCallbacks{
 
     private ViewPager viewPager;
+    private MyFragmentPagerAdapter pagerAdapter;
     private static final int MENU_FRAG = 0;
     private static final int ROOT_FRAG = 1;
     private static final int CALEDAR_FRAG = 2;
     private static int PAG_NUM = 3;
-    private static SolidFragmentPool fgtPool = null;
+    //private static SolidFragmentPool fgtPool = null;
     private LabelAPIRouter labelAPIroute;
     private Dialog mainDialog;
 
@@ -58,13 +59,12 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // CONNECTION SESSION
         DBOpenHelper myOpenHelper = new DBOpenHelper(MainActivity.this, DBOpenHelper.DB_NAME, null, DBOpenHelper.DB_V);
-
-        //CONNECTION SESSION
         labelAPIroute = new LabelAPIRouter(this, myOpenHelper, "mc896havn4wp7rf73yu5sxxs");
         mainDialog = new Dialog(MainActivity.this);
 
-        //RESTORE STATE
+        // RESTORE STATE
         if (savedInstanceState == null) {
             SupporHolder.si = null;
             DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -83,13 +83,17 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     }
 
     private void updateUI() {
+        /*
         if(fgtPool==null) {
+
             initiatePool();
         }
+        */
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         FragmentManager fm = getSupportFragmentManager();
-        PagerAdapter adapterViewPager = new MyFragmentPagerAdapter(fm);
-        viewPager.setAdapter(adapterViewPager);
+        pagerAdapter = new MyFragmentPagerAdapter(fm,PAG_NUM);
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.setOffscreenPageLimit(PAG_NUM);
     }
 
     @Override
@@ -127,8 +131,8 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
+        super.onActivityResult(requestCode, resultCode, data);
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (scanningResult != null) {
 
@@ -143,10 +147,14 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
                     "Errore scansione, nessun dato ricevuto", Toast.LENGTH_SHORT);
             toast.show();
         }
-
     }
 
-    // OnTopDialogLauncher: gestione fragments annidiati: callback per visualizzazione dialog onTop
+    /**
+     * OVERVIEW: metodo di gestione del Dialog. Lancia in backgorund la eichiesta di una nuova sessione
+     * se non è stata creata.
+     *
+     * @param type
+     */
     @Override
     public void lauchDialog(int type) {
 
@@ -190,12 +198,16 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     @Override
     public void onRefreshedData(int pos) {
         if(pos!=-1) {
+            //updateUI();
             Log.d("onRefreshedData", "----------------------------data refreshed");
-            ((FragmentSwapper) (fgtPool.getAt(ROOT_FRAG))).swapWith(pos,true);
-            boolean calendarUpdate= ((CalendarFragment)(fgtPool.getAt(CALEDAR_FRAG))).updateDayEntry(SupporHolder.currentChaceDayID);
-            if(!calendarUpdate) {
-                fgtPool.insertFragmentAtandReturn(CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG), CALEDAR_FRAG);
-            }
+           // ((FragmentSwapper) (fgtPool.getAt(ROOT_FRAG))).swapWith(pos,true);
+            FragmentSwapper fswp = (FragmentSwapper)pagerAdapter.findFragmentByID(ROOT_FRAG);
+            fswp.swapWith(pos,true);
+
+            CalendarFragment cfg = (CalendarFragment)pagerAdapter.findFragmentByID(CALEDAR_FRAG);
+            cfg.updateDayEntry(SupporHolder.currentChaceDayID);
+
+            //boolean calendarUpdate = ((CalendarFragment)(fgtPool.getAt(CALEDAR_FRAG))).updateDayEntry(SupporHolder.currentChaceDayID);
         }
     }
 
@@ -261,10 +273,10 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         text.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pages ++;
-                if(pages == 1)
-                    ((TextView)v).setText("Per inserire un alimento tenere\npremuto uno dei 5 tasti\n\n FINE");
-                if(pages == 2)
+                pages++;
+                if (pages == 1)
+                    ((TextView) v).setText("Per inserire un alimento tenere\npremuto uno dei 5 tasti\n\n FINE");
+                if (pages == 2)
                     tutorial.dismiss();
             }
         });
@@ -272,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     }
 
 
-
+    /*
     private static void initiatePool() {
 
         fgtPool = new SolidFragmentPool(PAG_NUM);
@@ -280,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         fgtPool.insertFragment(RootFragment.newInstance("root_fragment", ROOT_FRAG ));
         fgtPool.insertFragment(CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG ));
     }
+    */
 
     /**
      * OVERVIEW: implementazione del metodo fornito dall'interfaccia FragmentSwapper:
@@ -294,15 +307,17 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         if(withScroll)
             viewPager.setCurrentItem(ROOT_FRAG);
 
-        if(fgtPool.getAt(ROOT_FRAG)==null)
-            fgtPool.insertFragmentAtandReturn(RootFragment.newInstance("root_fragment", ROOT_FRAG), ROOT_FRAG);
-            return ((FragmentSwapper)(fgtPool.getAt(ROOT_FRAG))).swapWith(pos,true);
+        //fgtPool.insertFragmentAtandReturn(RootFragment.newInstance("root_fragment", ROOT_FRAG), ROOT_FRAG);
+        FragmentSwapper fgsw = (FragmentSwapper)pagerAdapter.findFragmentByID(ROOT_FRAG);
+        return fgsw.swapWith(pos,true);
+        //    return ((FragmentSwapper)(fgtPool.getAt(ROOT_FRAG))).swapWith(pos,true);
     }
+    /*
 
-    /**
+        **
      * OVERVIEW: Sottoclasse del FragmentPagerAdapter. gestione dei fragment ritenuti dall'activity
      * con l'uso della fragmentPool
-     */
+
     private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
         private int fragmentCount = PAG_NUM;
@@ -323,6 +338,69 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         @Override
         public int getCount() {
             return fragmentCount;
+        }
+
+    }
+    */
+
+    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+
+        public FragmentManager fragmentManager;
+        private int fragmentCount;
+        public String[] fragmentTags;
+
+        public MyFragmentPagerAdapter ( FragmentManager fm, int pagNum ) {
+
+            super(fm);
+            this.fragmentManager = fm;
+            this.fragmentCount = pagNum;
+            this.fragmentTags = new String[fragmentCount];
+        }
+
+        @Override
+        public Fragment getItem(int pos) {
+
+            Fragment f = null;
+            switch (pos) {
+                case MENU_FRAG: {
+                    Log.d("getItem","nuovo fragment MENU_FRAG"+ pos);
+                    f = MenuFragment.newInstance("menu_fragment", MENU_FRAG);
+                    break;
+                }
+                case ROOT_FRAG: {
+                    Log.d("getItem", "nuovo fragment ROOT_FRAG"+ pos);
+                    f = RootFragment.newInstance("root_fragment", ROOT_FRAG);
+                    break;
+                }
+                case CALEDAR_FRAG: {
+                    Log.d("getItem", "nuovo fragment CALEDAR_FRAG"+ pos);
+                    f = CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG);
+                    break;
+                }
+            }
+            if(f!=null) {
+                fragmentTags[pos] = f.getTag();
+            }
+            return f;
+        }
+
+        @Override
+        public int getCount() {
+            return fragmentCount;
+        }
+
+        public Fragment findFragmentByID (int id) {
+
+            Fragment ret = this.fragmentManager.findFragmentByTag(this.fragmentTags[id]);
+            if(ret==null)
+                ret = this.getItem(id);
+            return ret;
+        }
+
+        public String getTagOfFragment(int pos) {
+            if(pos>=0 && pos<fragmentCount)
+                return fragmentTags[pos];
+            return null;
         }
 
     }

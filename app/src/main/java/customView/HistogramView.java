@@ -48,7 +48,7 @@ public class HistogramView extends View{
     }
 
     private void setNormalizedValues() {
-        float max = 0;
+        float max = -1;
         for(int i= 0; i<values.length; i++) {
             if (values[i]>max)
                 max = values[i];
@@ -57,6 +57,9 @@ public class HistogramView extends View{
             for (int i = 0; i < values.length; i++) {
                 normalizedValues[i] = values[i] / max;
             }
+        }
+        else if (max < 0 && max > -1){
+            normalizedValues = new float[]{5, 5, 5, 5};
         }
     }
 

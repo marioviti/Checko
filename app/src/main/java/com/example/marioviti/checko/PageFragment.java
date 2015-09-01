@@ -28,6 +28,7 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
     private HistogramView hv;
     private HistogramAnimation ha;
     private View v;
+
     public void onCreate(Bundle si) {
         super.onCreate(si);
         Log.d("onCreate", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
@@ -79,8 +80,7 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         TextView tv = (TextView) v.findViewById(R.id.tvLabel);
         TextView tvIndicator = (TextView) v.findViewById(R.id.indicator_textView);
         hv = (HistogramView) v.findViewById(R.id.page_histogram);
-
-
+        hv.setValues(new float[] {5,5,5,5});
         float percent = 0;
         float[] values = null;
         if(SupporHolder.currentChaceDayID!=-1) {

@@ -26,7 +26,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
     @Override
     public void onCreate(Bundle si) {
         super.onCreate(si);
-        Log.d("onCreate", "---------------------------MENU_FRAGMENT");
+        Log.d("onCreate", "---------------------------MENU_FRAGMENT"+this.getTag());
     }
 
     @Override

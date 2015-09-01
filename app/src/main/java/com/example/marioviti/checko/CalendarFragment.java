@@ -23,10 +23,10 @@ import customView.CalendarRowBarView;
  */
 public class CalendarFragment extends ListFragment implements View.OnClickListener{
 
-    private View view;
-    private View.OnClickListener myself;
-    private CalendarListFragmentAdapter caa;
-    private FragmentSwapper caller;
+    private static View view;
+    private static View.OnClickListener myself;
+    private static CalendarListFragmentAdapter caa;
+    private static FragmentSwapper caller;
 
     @Override
     public void onAttach(Activity activity) {
@@ -67,14 +67,18 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
         setListAdapter(caa);
         view = super.onCreateView(li, container, si);
 
-        Log.d("onCreateView", "---------------------------CALENDAR_FRAGMENT");
+        Log.d("onCreateView", "---------------------------CALENDAR_FRAGMENT " + this.getTag());
 
         return view;
     }
 
     public boolean updateDayEntry (int currentDayCacheId ) {
 
-        if (view==null){return false;}
+        if (view==null){
+            Log.d("updateDayEntry","-----------------------------------------------UPDATE LAYOUT DEL CALENDARIO FALLITA");
+            return false;
+        }
+        Log.d("updateDayEntry","-----------------------------------------------UPDATE LAYOUT DEL CALENDARIO");
         CalendarRowBarView v = caa.getViewRow(currentDayCacheId);
         v.setValues(SupporHolder.calendarCache[currentDayCacheId].values);
         v.requestLayout();
@@ -102,14 +106,15 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
                 SupporHolder.currentChaceDayID = ((CalendarRowBarView)v).getPositionDATECacheID();
                 SupporHolder.currentDay = ((CalendarRowBarView)v).getDate();
                 animateCalendar((CalendarRowBarView) v, caa.getViewRow(oldChaceDayID));
-                int pos = calculateMainofTheDay();
+                int pos = calculateMainOfTheDay();
                 caller.swapWith(pos, false);
                 break;
             }
         }
     }
 
-    private int calculateMainofTheDay() {
+    private int calculateMainOfTheDay() {
+
         int[] values = SupporHolder.calendarCache[SupporHolder.currentChaceDayID].values;
         int max = 0;
         int j = 0;
