@@ -38,13 +38,13 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
     public void onCreate(Bundle si) {
         super.onCreate(si);
         myself = this;
-        Log.d("onCreate", "---------------------------CALENDAR_FRAGMENT");
+        //Log.d("onCreate", "---------------------------CALENDAR_FRAGMENT "+this.getTag());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("onDestroy", "---------------------------CALENDAR_FRAGMENT");
+        //Log.d("onDestroy", "---------------------------CALENDAR_FRAGMENT");
     }
 
     @Override
@@ -67,18 +67,36 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
         setListAdapter(caa);
         view = super.onCreateView(li, container, si);
 
-        Log.d("onCreateView", "---------------------------CALENDAR_FRAGMENT " + this.getTag());
+        //Log.d("onCreateView", "---------------------------CALENDAR_FRAGMENT " + this.getTag());
 
         return view;
     }
 
-    public boolean updateDayEntry (int currentDayCacheId ) {
+    public static void dataUpdate() {
+
+        CalendarEntry[] entries = null;
+        int active = 0;
+        for( int i =0; i<SupporHolder.calendarCache.length; i++) {
+            if(SupporHolder.calendarCache[i]!=null)
+                active++;
+        }
+        if (active!=0) {
+            entries = new CalendarEntry[active];
+            for (int i = 0; i < active; i++) {
+                entries[i] = SupporHolder.calendarCache[i];
+            }
+        }
+        caa.data=entries;
+        caa.notifyDataSetChanged();
+    }
+
+    public static boolean updateDayEntry (int currentDayCacheId ) {
 
         if (view==null){
-            Log.d("updateDayEntry","-----------------------------------------------UPDATE LAYOUT DEL CALENDARIO FALLITA");
+            //Log.d("updateDayEntry","-----------------------------------------------UPDATE LAYOUT DEL CALENDARIO FALLITA");
             return false;
         }
-        Log.d("updateDayEntry","-----------------------------------------------UPDATE LAYOUT DEL CALENDARIO");
+        //Log.d("updateDayEntry","-----------------------------------------------UPDATE LAYOUT DEL CALENDARIO");
         CalendarRowBarView v = caa.getViewRow(currentDayCacheId);
         v.setValues(SupporHolder.calendarCache[currentDayCacheId].values);
         v.requestLayout();
@@ -101,9 +119,9 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
 
         switch (v.getId()) {
             case R.id.row_custom_view : {
-                int oldChaceDayID =  SupporHolder.currentChaceDayID;
+                int oldChaceDayID =  SupporHolder.currentCacheDayID;
                 SupporHolder.currentDayID = ((CalendarRowBarView)v).getDateID();
-                SupporHolder.currentChaceDayID = ((CalendarRowBarView)v).getPositionDATECacheID();
+                SupporHolder.currentCacheDayID = ((CalendarRowBarView)v).getPositionDATECacheID();
                 SupporHolder.currentDay = ((CalendarRowBarView)v).getDate();
                 animateCalendar((CalendarRowBarView) v, caa.getViewRow(oldChaceDayID));
                 int pos = calculateMainOfTheDay();
@@ -115,7 +133,7 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
 
     private int calculateMainOfTheDay() {
 
-        int[] values = SupporHolder.calendarCache[SupporHolder.currentChaceDayID].values;
+        int[] values = SupporHolder.calendarCache[SupporHolder.currentCacheDayID].values;
         int max = 0;
         int j = 0;
         for (int i=0; i<values.length-1; i++) {
@@ -185,7 +203,7 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
                 crow.setValues(entryDay.values);
                 crow.setDate(entryDay.day);
                 crow.setPositionDATECacheID(position);
-                if(crow.getPositionDATECacheID()==SupporHolder.currentChaceDayID)
+                if(crow.getPositionDATECacheID()==SupporHolder.currentCacheDayID)
                     crow.setAlphaVal(0);
                 viewRows.add(position, crow);
                 this.size ++;

@@ -36,7 +36,7 @@ public class LabelAPIHttpTask extends AsyncTask<String,String,JSONObject> {
 
     JSONObject elaborateReq (URL url) throws java.net.ConnectException{
 
-        Log.d("LabelAPIHttpTask", "------------------------------URL: "+ url.toString());
+        //Log.d("LabelAPIHttpTask", "------------------------------URL: "+ url.toString());
         InputStream is = null;
         JSONObject jsonObject = null;
         BufferedReader r;
@@ -47,12 +47,11 @@ public class LabelAPIHttpTask extends AsyncTask<String,String,JSONObject> {
             URLConnection conn = url.openConnection();
             Map mp = conn.getHeaderFields();
             Object[] ks = conn.getHeaderFields().keySet().toArray();
-            //List<String> immutablelist = Collections.unmodifiableList((List<String>) mp.get(ks[0]));
             String RET_CODE = mp.get(ks[0]).toString();
-            Log.d("LabelAPIHttpTask", "------------------------------HTTP: "+ ks[0] + " -> " + RET_CODE);
+            //Log.d("LabelAPIHttpTask", "------------------------------HTTP: "+ ks[0] + " -> " + RET_CODE);
 
             if(!RET_CODE.contains("200")){
-                Log.d("LabelAPIHttpTask", "------------------------------ERRORE CONNESSIONE");
+                Log.d("LabelAPIHttpTask", "------------------------------ERRORE CONNESSIONE"+RET_CODE);
                 throw new java.net.ConnectException();
             }
 

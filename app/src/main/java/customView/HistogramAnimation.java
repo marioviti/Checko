@@ -12,6 +12,7 @@ public class HistogramAnimation extends Animation {
     HistogramView histogramView;
 
     public HistogramAnimation(HistogramView histogramView, float[] newValues) {
+
         this.oldValues = histogramView.getValues();
         this.newValues = newValues;
         this.histogramView = histogramView;

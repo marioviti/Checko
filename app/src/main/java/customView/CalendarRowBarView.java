@@ -110,7 +110,7 @@ public class CalendarRowBarView extends View {
 
     //Utility
     public int getDateID() {
-        return settedValues[5];
+        return CahceID;
     }
 
     public String getDate() { return date; }

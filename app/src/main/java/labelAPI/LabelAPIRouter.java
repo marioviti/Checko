@@ -146,7 +146,7 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
                     this.sessionID = values.get("session_id").toString();
                     this.sessionHasStarted = true;
 
-                    Log.d("LabelApiHandler", "------------------------------------------------------session_id=" + sessionID);
+                    //Log.d("LabelApiHandler", "------------------------------------------------------session_id=" + sessionID);
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -160,7 +160,7 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
 
                 }catch(JSONException e) {
                     e.printStackTrace();
-                    Log.d("LabelApiHandler", "------------------------------------------------------PROBLEMI RISPOSTA ARRAY");
+                    //Log.d("LabelApiHandler", "------------------------------------------------------PROBLEMI RISPOSTA ARRAY");
                 }
                 break;
             }
@@ -174,13 +174,12 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
     @Override
     public void manageQueryRes(Object res, int task) {
 
-        if(task == DBQueryManager.INSERT) {
-            // refresh data
-            startDBTask(null, DBQueryManager.REFRESH_FETCH);
+        if(task == DBQueryManager.INSERT || task == DBQueryManager.NEW_DATE) {
+            caller.onRefreshedData(SupporHolder.globalTypeVariable, task);
         }
+
         if(task == DBQueryManager.REFRESH_FETCH) {
-            //Signal upper UI using the LabelAPIServiceCallbacks
-            caller.onRefreshedData(SupporHolder.globalTypeVariable);
+            caller.onRefreshedData(SupporHolder.globalTypeVariable, task);
             if(SupporHolder.latestDayID==-1)
                 caller.onFirstAccess();
         }

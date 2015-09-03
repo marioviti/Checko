@@ -21,12 +21,13 @@ import Support.SupporHolder;
  * Created by marioviti on 18/08/15.
  */
 
-public class RootFragment extends Fragment implements FragmentSwapper {
+public class RootFragment extends Fragment {
 
     private static FragmentPool fgtPool;
     private static int PAG_NUM = 5;
     private static FragmentManager fm;
     private static FragmentActivity myContext;
+    private static final int ROOT_FRAG = 1;
 
     public void onAttach(Activity activity) {
 
@@ -38,7 +39,7 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     @Override
     public void onCreate(Bundle si) {
         super.onCreate(si);
-        Log.d("onCreate", "---------------------------ROOT_FRAGMENT"+this.getTag());
+        //Log.d("onCreate", "---------------------------ROOT_FRAGMENT " + this.getTag());
     }
 
     @Override
@@ -49,9 +50,9 @@ public class RootFragment extends Fragment implements FragmentSwapper {
         // hack: per evitare che il primo fragment non sia riconosciuto come quello corrente
         // setto quello corrente a 1 != 0 in modo che venga settato
         this.fgtPool.setCurr(1);
-        this.swapWith(0,true);
+        this.swapInnerFragmentWith(0, false);
 
-        Log.d("onCreateView", "---------------------------ROOT_FRAGMENT");
+        //Log.d("onCreateView", "---------------------------ROOT_FRAGMENT");
         return v;
     }
 
@@ -74,12 +75,11 @@ public class RootFragment extends Fragment implements FragmentSwapper {
 
     }
 
-    /*
-        Sistema di interfacciamento per Fragment annidati: il RootFragment ritiene i Fragment
-        gestisce le transazioni FragmentTransaction dinamiche
-        */
-    @Override
-    public boolean swapWith( int pos , boolean withSroll ) {
+    /**
+        Workaround dell'implementazione del FragmentPageAdapter.instantiateItem(...)
+    */
+
+    public static boolean swapInnerFragmentWith(int pos, boolean withSroll) {
 
         if( fgtPool.getCurr()==pos ) {
             ((PageFragment)fgtPool.getAt(pos)).updateUI();
@@ -89,18 +89,11 @@ public class RootFragment extends Fragment implements FragmentSwapper {
             Fragment fgIn, fgOut;
             FragmentTransaction fgt;
             fgIn = fgtPool.getAt(pos);
-            fgOut = fgtPool.getAt(fgtPool.getCurr());
             fgt = fm.beginTransaction();
             if (fgIn == null) {
                 fgIn = fgtPool.insertFragmentAtandReturn(PageFragment.newInstance("page", pos), pos);
             }
-            if(fgOut == null) {
-                fgt.add(R.id.fragment_placeholder,fgIn,fgIn.getTag());
-            } else {
-                fgt.remove(fgOut);
-                fgt.add(R.id.fragment_placeholder,fgIn,fgIn.getTag());
-            }
-            //fgt.replace(R.id.fragment_placeholder, fg);
+            fgt.replace(R.id.fragment_placeholder,fgIn);
             fgt.commit();
             fgtPool.setCurr(pos);
         }
@@ -110,6 +103,6 @@ public class RootFragment extends Fragment implements FragmentSwapper {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("onDestroy", "---------------------------ROOT_FRAGMENT");
+        //Log.d("onDestroy", "---------------------------ROOT_FRAGMENT");
     }
 }

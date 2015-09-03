@@ -5,7 +5,7 @@ package labelAPI;
  */
 public interface LabelAPIServiceCallbacks {
 
-    public void onRefreshedData(int pos);
+    public void onRefreshedData(int pos, int task);
 
     public void onReceivedData();
 

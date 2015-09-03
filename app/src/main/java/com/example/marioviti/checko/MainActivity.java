@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +22,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 import Support.SupporHolder;
 import databaseHandling.DBOpenHelper;
+import databaseHandling.DBQueryManager;
 import labelAPI.LabelAPIRouter;
 import labelAPI.LabelAPIServiceCallbacks;
 import labelAPI.LabelAPIProtocol;
@@ -31,17 +31,15 @@ import labelAPI.LabelAPIProtocol;
 /**
  *  OVERVIEW: MainActivity, sottoclasse della AppCompatActivity, implementa le interfacce che contengono le callback ai vari fragment annidati
  */
+
 public class MainActivity extends AppCompatActivity implements FragmentSwapper, OnTopDialogLauncher, View.OnClickListener, LabelAPIServiceCallbacks{
 
     private ViewPager viewPager;
     private MyFragmentPagerAdapter pagerAdapter;
-    private static final int MENU_FRAG = 0;
-    private static final int ROOT_FRAG = 1;
-    private static final int CALEDAR_FRAG = 2;
     private static int PAG_NUM = 3;
-    //private static SolidFragmentPool fgtPool = null;
     private LabelAPIRouter labelAPIroute;
     private Dialog mainDialog;
+    private DBOpenHelper myOpenHelper;
 
     /**
      * OVERVIEW: Creazione/ripristino del database con l'uso dell'helper.
@@ -60,40 +58,46 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         setContentView(R.layout.activity_main);
 
         // CONNECTION SESSION
-        DBOpenHelper myOpenHelper = new DBOpenHelper(MainActivity.this, DBOpenHelper.DB_NAME, null, DBOpenHelper.DB_V);
+        myOpenHelper.debug = true;
+        myOpenHelper = new DBOpenHelper(MainActivity.this, DBOpenHelper.DB_NAME, null, DBOpenHelper.DB_V);
         labelAPIroute = new LabelAPIRouter(this, myOpenHelper, "mc896havn4wp7rf73yu5sxxs");
         mainDialog = new Dialog(MainActivity.this);
 
         // RESTORE STATE
         if (savedInstanceState == null) {
-            SupporHolder.si = null;
             DisplayMetrics metrics = getResources().getDisplayMetrics();
-            Log.d("onCreate", "---------------------------FIRST ACCESS METRICS: " + metrics.toString());
+            //Log.d("onCreate", "---------------------------FIRST ACCESS METRICS: " + metrics.toString());
 
         }else {
+
             SupporHolder.latestDay = savedInstanceState.getString("latestDay");
             SupporHolder.latestDayID = savedInstanceState.getInt("latestDateID");
             SupporHolder.currentDay = savedInstanceState.getString("currentDay");
             SupporHolder.currentDayID = savedInstanceState.getInt("currentDayID");
-            SupporHolder.currentChaceDayID = savedInstanceState.getInt("currentChaceDayID");
+            SupporHolder.currentCacheDayID = savedInstanceState.getInt("currentCacheDayID");
+            SupporHolder.lastCacheDayID = savedInstanceState.getInt("lastCacheDayID");
+            SupporHolder.currentPage = savedInstanceState.getInt("currentPage");
         }
-        labelAPIroute.sync();
 
-        Log.d("onCreate", "---------------------------MAIN_ACTIVITY");
+        labelAPIroute.sync(); /** updateUI() viene chiamato come callback dopo il labelAPIroute.sync() */
+
+        //Log.d("onCreate", "---------------------------MAIN_ACTIVITY");
     }
 
+    /**
+     * updateUI() viene chiamato come callback dopo il sync
+     */
     private void updateUI() {
-        /*
-        if(fgtPool==null) {
 
-            initiatePool();
+        if(viewPager==null) {
+
+            viewPager = (ViewPager) findViewById(R.id.view_pager);
         }
-        */
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
         FragmentManager fm = getSupportFragmentManager();
         pagerAdapter = new MyFragmentPagerAdapter(fm,PAG_NUM);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOffscreenPageLimit(PAG_NUM);
+        viewPager.setCurrentItem(SupporHolder.currentPage,false);
     }
 
     @Override
@@ -102,9 +106,9 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         super.onConfigurationChanged(newConfig);
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Log.d("onConfigurationChanged", "---------------------------MAIN_ACTIVITY_ORIENTATION_LANDSCAPE: " + newConfig.toString());
+            //Log.d("onConfigurationChanged", "---------------------------MAIN_ACTIVITY_ORIENTATION_LANDSCAPE: " + newConfig.toString());
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-            Log.d("onConfigurationChanged", "---------------------------MAIN_ACTIVITY_ORIENTATION_PORTRAIT: " + newConfig.toString());
+            //Log.d("onConfigurationChanged", "---------------------------MAIN_ACTIVITY_ORIENTATION_PORTRAIT: " + newConfig.toString());
         }
     }
 
@@ -117,16 +121,18 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         savedInstanceState.putInt("latestDateID", SupporHolder.latestDayID);
         savedInstanceState.putString("currentDay", SupporHolder.currentDay);
         savedInstanceState.putInt("currentDayID", SupporHolder.currentDayID);
-        savedInstanceState.putInt("currentChaceDayID", SupporHolder.currentChaceDayID);
+        savedInstanceState.putInt("currentCacheDayID", SupporHolder.currentCacheDayID);
+        savedInstanceState.putInt("lastCacheDayID", SupporHolder.lastCacheDayID);
+        savedInstanceState.putInt("currentPage", SupporHolder.currentPage);
 
-        Log.d("onSaveInstanceState", "---------------------------MAIN_ACTIVITY");
+        //Log.d("onSaveInstanceState", "---------------------------MAIN_ACTIVITY");
     }
 
     @Override
     public void onDestroy() {
 
         super.onDestroy();
-        Log.d("onDestroy", "---------------------------MAIN_ACTIVITY");
+        //Log.d("onDestroy", "---------------------------MAIN_ACTIVITY");
     }
 
     @Override
@@ -172,19 +178,19 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         this.mainDialog.show();
     }
 
-    // INTERFACCIAMENTO: listener per bottone del dialog
     @Override
     public void onClick(View v) {
 
         switch (v.getId()) {
-            case(R.id.dialog_button) : {
+            case(R.id.dialog_button): {
 
                 String GTIN = ((EditText) this.mainDialog.findViewById(R.id.dialog_editText)).getText().toString();
                 labelAPIroute.createSessionArrayURL(GTIN);
                 labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_ARRAY_REQ);
                 break;
             }
-            case(R.id.dialog_scan_button) : {
+            case(R.id.dialog_scan_button): {
+
                 IntentIntegrator scanIntegrator = new IntentIntegrator(this);
                 scanIntegrator.initiateScan();
             }
@@ -196,18 +202,16 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
      * Chiamata al ritorno dal task di refresh del SupporHolder.
      */
     @Override
-    public void onRefreshedData(int pos) {
+    public void onRefreshedData(int pos, int task) {
+
         if(pos!=-1) {
-            //updateUI();
-            Log.d("onRefreshedData", "----------------------------data refreshed");
-           // ((FragmentSwapper) (fgtPool.getAt(ROOT_FRAG))).swapWith(pos,true);
-            FragmentSwapper fswp = (FragmentSwapper)pagerAdapter.findFragmentByID(ROOT_FRAG);
-            fswp.swapWith(pos,true);
 
-            CalendarFragment cfg = (CalendarFragment)pagerAdapter.findFragmentByID(CALEDAR_FRAG);
-            cfg.updateDayEntry(SupporHolder.currentChaceDayID);
-
-            //boolean calendarUpdate = ((CalendarFragment)(fgtPool.getAt(CALEDAR_FRAG))).updateDayEntry(SupporHolder.currentChaceDayID);
+            if(task== DBQueryManager.NEW_DATE) {
+                updateUI();
+            }else {
+                RootFragment.swapInnerFragmentWith(pos, false);
+                CalendarFragment.updateDayEntry(SupporHolder.currentCacheDayID);
+            }
         }
     }
 
@@ -218,8 +222,9 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
      */
     @Override
     public void onReceivedData() {
+
         this.mainDialog.dismiss();
-        viewPager.setCurrentItem(ROOT_FRAG);
+        viewPager.setCurrentItem(SupporHolder.ROOT_FRAG);
     }
 
     /**
@@ -235,18 +240,22 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
             text.setText("Codice non valido, prova un'altro");
     }
 
-    /**
-     * Overview: Callback fornita per il LabelAPIRouter.
-     * La sessione non è più valida, ne viene richiesta una nuova.
-     */
+
     @Override
     public void onSessionExpired() {
+
         labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
     }
 
     @Override
     public void onSync() {
+
         updateUI();
+    }
+
+    @Override
+    public void onFirstAccess() {
+
     }
 
     /**
@@ -255,44 +264,11 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
      */
     @Override
     public void onHttpConnectionError() {
+
         TextView text = (TextView) this.mainDialog.findViewById(R.id.dialog_text_view);
         if(text!=null)
             text.setText("Errore Connessione non presente");
     }
-
-    private Dialog tutorial;
-    private int pages = 0;
-
-    @Override
-    public void onFirstAccess() {
-        tutorial = new Dialog(MainActivity.this);
-        tutorial.setTitle("Benvenuto!");
-        tutorial.setContentView(R.layout.tutorial_layout);
-        TextView text = (TextView)  tutorial.findViewById(R.id.tutorial_textView);
-        text.setText("Benvenuto in Chefcheck\n\n AVANTI ->");
-        text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pages++;
-                if (pages == 1)
-                    ((TextView) v).setText("Per inserire un alimento tenere\npremuto uno dei 5 tasti\n\n FINE");
-                if (pages == 2)
-                    tutorial.dismiss();
-            }
-        });
-        tutorial.show();
-    }
-
-
-    /*
-    private static void initiatePool() {
-
-        fgtPool = new SolidFragmentPool(PAG_NUM);
-        fgtPool.insertFragment(MenuFragment.newInstance("menu_fragment", MENU_FRAG ));
-        fgtPool.insertFragment(RootFragment.newInstance("root_fragment", ROOT_FRAG ));
-        fgtPool.insertFragment(CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG ));
-    }
-    */
 
     /**
      * OVERVIEW: implementazione del metodo fornito dall'interfaccia FragmentSwapper:
@@ -304,57 +280,23 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
      */
     @Override
     public boolean swapWith(int pos,boolean withScroll) {
+
         if(withScroll)
-            viewPager.setCurrentItem(ROOT_FRAG);
-
-        //fgtPool.insertFragmentAtandReturn(RootFragment.newInstance("root_fragment", ROOT_FRAG), ROOT_FRAG);
-        FragmentSwapper fgsw = (FragmentSwapper)pagerAdapter.findFragmentByID(ROOT_FRAG);
-        return fgsw.swapWith(pos,true);
-        //    return ((FragmentSwapper)(fgtPool.getAt(ROOT_FRAG))).swapWith(pos,true);
-    }
-    /*
-
-        **
-     * OVERVIEW: Sottoclasse del FragmentPagerAdapter. gestione dei fragment ritenuti dall'activity
-     * con l'uso della fragmentPool
-
-    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-
-        private int fragmentCount = PAG_NUM;
-
-        public MyFragmentPagerAdapter ( FragmentManager fm ) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int pos) {
-            return fgtPool.getAt(pos);
-        }
-
-        public int getItemPosition (Object object) {
-            return fgtPool.getCurr();
-        }
-
-        @Override
-        public int getCount() {
-            return fragmentCount;
-        }
+            viewPager.setCurrentItem(SupporHolder.ROOT_FRAG);
+        return RootFragment.swapInnerFragmentWith(pos, withScroll);
 
     }
-    */
 
     private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
         public FragmentManager fragmentManager;
         private int fragmentCount;
-        public String[] fragmentTags;
 
-        public MyFragmentPagerAdapter ( FragmentManager fm, int pagNum ) {
+        public MyFragmentPagerAdapter (FragmentManager fm,int pagNum) {
 
             super(fm);
             this.fragmentManager = fm;
             this.fragmentCount = pagNum;
-            this.fragmentTags = new String[fragmentCount];
         }
 
         @Override
@@ -362,24 +304,18 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
             Fragment f = null;
             switch (pos) {
-                case MENU_FRAG: {
-                    Log.d("getItem","nuovo fragment MENU_FRAG"+ pos);
-                    f = MenuFragment.newInstance("menu_fragment", MENU_FRAG);
+                case SupporHolder.MENU_FRAG: {
+                    f = MenuFragment.newInstance("menu_fragment", SupporHolder.MENU_FRAG);
                     break;
                 }
-                case ROOT_FRAG: {
-                    Log.d("getItem", "nuovo fragment ROOT_FRAG"+ pos);
-                    f = RootFragment.newInstance("root_fragment", ROOT_FRAG);
+                case SupporHolder.ROOT_FRAG: {
+                    f = RootFragment.newInstance("root_fragment", SupporHolder.ROOT_FRAG);
                     break;
                 }
-                case CALEDAR_FRAG: {
-                    Log.d("getItem", "nuovo fragment CALEDAR_FRAG"+ pos);
-                    f = CalendarFragment.newInstance("calendar_fragment", CALEDAR_FRAG);
+                case SupporHolder.CALEDAR_FRAG: {
+                    f = CalendarFragment.newInstance("calendar_fragment", SupporHolder.CALEDAR_FRAG);
                     break;
                 }
-            }
-            if(f!=null) {
-                fragmentTags[pos] = f.getTag();
             }
             return f;
         }
@@ -388,20 +324,5 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         public int getCount() {
             return fragmentCount;
         }
-
-        public Fragment findFragmentByID (int id) {
-
-            Fragment ret = this.fragmentManager.findFragmentByTag(this.fragmentTags[id]);
-            if(ret==null)
-                ret = this.getItem(id);
-            return ret;
-        }
-
-        public String getTagOfFragment(int pos) {
-            if(pos>=0 && pos<fragmentCount)
-                return fragmentTags[pos];
-            return null;
-        }
-
     }
 }

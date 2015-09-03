@@ -13,21 +13,21 @@ import java.util.Map;
  */
 public class SupporHolder {
 
-    public static Bundle si = null;
-
     public static String latestDay = "";
     public static int latestDayID = -1;
-    public static short globalTypeVariable = -1;
-    public static int currentDayID = -1;
-    public static int currentChaceDayID = -1;
     public static String currentDay = "";
-    public static HashMap<String,float[]> summaryCalendarCache = new HashMap<>();
-    // e queste sono settate
-    public static CalendarEntry[] calendarCache = new CalendarEntry[10];
+    public static int currentDayID = -1;
+    public static int currentCacheDayID = -1;
+    public static int lastCacheDayID = -1;
     public static final int cacheDayLimit = 10;
 
-    public static String summaryKey (int currentDayID, int type) {
-        return currentDayID+","+type;
-    }
+    public static short globalTypeVariable = -1;
+    public static CalendarEntry[] calendarCache = new CalendarEntry[10];
+
+    public static final int MENU_FRAG = 0;
+    public static final int ROOT_FRAG = 1;
+    public static final int CALEDAR_FRAG = 2;
+
+    public static int currentPage = MENU_FRAG;
 
 }

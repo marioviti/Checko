@@ -12,7 +12,7 @@ import android.util.Log;
 public class DBOpenHelper extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "LabelApiDatabaseV1.db";
-    public static int DB_V = 11;
+    public static int DB_V = 20;
 
     public static final String DB_TABLE_CAL = "calendar";
     public static final String CAL_COL_PK = "c_id";
@@ -33,6 +33,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     public static final String PROD_COL_FAT = "Total_Fat";
     public static final String PROD_COL_CAL = "Calories";
     public static final String PROD_COL_DATE_FK_ID = "p_date_id";
+    public static boolean debug = false;
 
     private String DATABASE_DELETE_PROD = "DROP TABLE IF EXISTS " + DB_TABLE_PROD + " ;";
     private String DATABASE_DELETE_CAL = "DROP TABLE IF EXISTS " + DB_TABLE_CAL + " ;";
@@ -80,6 +81,42 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         db.execSQL(DATABASE_CREATE_CAL);
         db.execSQL(DATABASE_CREATE_PROD);
 
-        Log.d("onUpgrade","---------------database Upgraded");
+        if(debug) {
+            createDummyData(db);
+        }
+
+        //Log.d("onUpgrade", "---------------database Upgraded");
+    }
+
+    private void createDummyData(SQLiteDatabase db) {
+        String query = "INSERT INTO " + DB_TABLE_CAL +
+                " (c_date, type0, type1, type2, type3, type4  )"+
+                " VALUES ( '2015-08-25','0','2','1','0','1');";
+        db.execSQL(query);
+        query = "INSERT INTO " + DB_TABLE_CAL +
+                " (c_date, type0, type1, type2, type3, type4  )"+
+                " VALUES ( '2015-08-29','1','0','1','1','0');";
+        db.execSQL(query);
+
+        query = fillProd(1,1);
+        db.execSQL(query);
+        db.execSQL(query);
+        query = fillProd(1,2);
+        db.execSQL(query);
+        query = fillProd(1,4);
+        db.execSQL(query);
+        query = fillProd(2,0);
+        db.execSQL(query);
+        query = fillProd(2,2);
+        db.execSQL(query);
+        query = fillProd(2,3);
+        db.execSQL(query);
+
+    }
+
+    private String fillProd(int d,int i) {
+        return "INSERT INTO " + DB_TABLE_PROD +
+                "(upc, product_name, p_type, Total_Carbohydrate, Protein, Total_Fat, Calories, p_date_id)" +
+                " VALUES ('1234567890', 'food', '"+i+"', '10.0', '5.0', '5.0', '10.0' , '"+d+"')";
     }
 }

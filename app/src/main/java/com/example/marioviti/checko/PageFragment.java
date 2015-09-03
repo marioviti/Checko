@@ -23,15 +23,18 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
 
     private int pos;
     private String page;
+
+    private View v;
+    private TextView tvCARB,tvPROT,tvFAT,tvCAL,tv,tvIndicator;
+
     private CircularIndicator c;
     private CircularIndicatorAnimation ca;
     private HistogramView hv;
     private HistogramAnimation ha;
-    private View v;
 
     public void onCreate(Bundle si) {
         super.onCreate(si);
-        Log.d("onCreate", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
+        //Log.d("onCreate", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
     }
 
     @Override
@@ -41,6 +44,7 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         pos = getArguments().getInt("pos");
 
         if(v==null) {
+
             v = li.inflate(R.layout.page_fragment0, container, false);
 
             switch (pos) {
@@ -65,28 +69,32 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
                     break;
                 }
             }
+
+            tvCARB = (TextView) v.findViewById(R.id.text_CAL);
+            tvPROT = (TextView) v.findViewById(R.id.text_PROT);
+            tvFAT = (TextView) v.findViewById(R.id.text_FAT);
+            tvCAL = (TextView) v.findViewById(R.id.text_CAL);
+            tv = (TextView) v.findViewById(R.id.tvLabel);
+            tvIndicator = (TextView) v.findViewById(R.id.indicator_textView);
+            hv = (HistogramView) v.findViewById(R.id.page_histogram);
+            c = (CircularIndicator) v.findViewById(R.id.circular_indicator);
+
         }
         updateUI();
-        Log.d("onCreateView", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT:" + pos);
+
+        //Log.d("onCreateView", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT:" + pos);
         return v;
     }
 
     public void updateUI() {
 
-        TextView tvCARB = (TextView) v.findViewById(R.id.text_CARB),
-                tvPROT = (TextView) v.findViewById(R.id.text_PROT),
-                tvFAT = (TextView) v.findViewById(R.id.text_FAT),
-                tvCAL = (TextView) v.findViewById(R.id.text_CAL);
-        TextView tv = (TextView) v.findViewById(R.id.tvLabel);
-        TextView tvIndicator = (TextView) v.findViewById(R.id.indicator_textView);
-        hv = (HistogramView) v.findViewById(R.id.page_histogram);
         hv.setValues(new float[] {5,5,5,5});
         float percent = 0;
         float[] values = null;
-        if(SupporHolder.currentChaceDayID!=-1) {
+        if(SupporHolder.currentCacheDayID!=-1) {
 
-            values = SupporHolder.calendarCache[SupporHolder.currentChaceDayID].summaries[pos];
-            percent = getPercent(SupporHolder.calendarCache[SupporHolder.currentChaceDayID].values);
+            values = SupporHolder.calendarCache[SupporHolder.currentCacheDayID].summaries[pos];
+            percent = getPercent(SupporHolder.calendarCache[SupporHolder.currentCacheDayID].values);
             tv.setText(SupporHolder.currentDay);
             tvCARB.setText(values[0] + "gr");
             tvPROT.setText(values[1] + "gr");
@@ -100,10 +108,15 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         else {
             tv.setText("Starts Today");
         }
-        c = (CircularIndicator) v.findViewById(R.id.circular_indicator);
+
         c.setAngle(0);
         ca = new CircularIndicatorAnimation(c,percent*360);
         ca.setDuration(1500);
+    }
+
+    public void animate(){
+        c.startAnimation(ca);
+        hv.startAnimation(ha);
     }
 
     public float getPercent(int [] values) {
@@ -117,7 +130,6 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Log.d("onDestroy", "---------------------------ROOT_FRAGMENT->PAGE_FRAGMENT");
     }
 
     public static PageFragment newInstance(String page, int pos) {
@@ -129,11 +141,6 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         ff.setArguments(args);
 
         return ff;
-    }
-
-    public void animate(){
-        c.startAnimation(ca);
-        hv.startAnimation(ha);
     }
 
     // Animazioni transizioni su transazioni Fragments

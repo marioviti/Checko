@@ -26,7 +26,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
     @Override
     public void onCreate(Bundle si) {
         super.onCreate(si);
-        Log.d("onCreate", "---------------------------MENU_FRAGMENT"+this.getTag());
+        Log.d("onCreate", "---------------------------MENU_FRAGMENT "+this.getTag());
     }
 
     @Override
@@ -40,7 +40,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
     @Override
     public View onCreateView (LayoutInflater li, ViewGroup container, Bundle si) {
 
-        Log.d("onCreateView", "---------------------------MENU_FRAGMENT");
+        //Log.d("onCreateView", "---------------------------MENU_FRAGMENT");
 
         view = li.inflate(R.layout.menu_fragment, container, false);
         CustomImageButton btn0 = (CustomImageButton) view.findViewById(R.id.frag_custom_button_0),
@@ -66,7 +66,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener, View
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("onDestroy", "---------------------------MENU_FRAGMENT");
+        //Log.d("onDestroy", "---------------------------MENU_FRAGMENT");
     }
 
     public static MenuFragment newInstance(String page, int pos) {
