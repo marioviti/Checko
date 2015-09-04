@@ -10,7 +10,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,7 +24,7 @@ import databaseHandling.DBOpenHelper;
 import databaseHandling.DBQueryManager;
 import labelAPI.LabelAPIRouter;
 import labelAPI.LabelAPIServiceCallbacks;
-import labelAPI.LabelAPIProtocol;
+import labelAPI.LabelAPIHolder;
 
 
 /**
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     /**
      * OVERVIEW: Creazione/ripristino del database con l'uso dell'helper.
      * Creazione della sessione per l'accesso al servizio LabelAPI.
-     * Inizializza la Pool di Fragment.
+     *
      * Restore dello stato utilizzando le variabili di stato primitive nel Bundle.
      *
      * MODIFIES: SupportHolder via LabelAPIRouter
@@ -146,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
             String scanFormat = scanningResult.getFormatName();
             String GTIN = scanContent;
             labelAPIroute.createSessionArrayURL(GTIN);
-            labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_ARRAY_REQ);
+            labelAPIroute.startHttpTask(LabelAPIHolder.SESSION_ARRAY_REQ);
         }
         else{
             Toast toast = Toast.makeText(getApplicationContext(),
@@ -165,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     public void lauchDialog(int type) {
 
         if (!labelAPIroute.hasSessionStarted())
-            labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
+            labelAPIroute.startHttpTask(LabelAPIHolder.SESSION_CREATE_REQ);
 
         this.mainDialog.setTitle("Inserisci un nuovo alimento");
         this.mainDialog.setContentView(R.layout.dialog_view);
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
                 String GTIN = ((EditText) this.mainDialog.findViewById(R.id.dialog_editText)).getText().toString();
                 labelAPIroute.createSessionArrayURL(GTIN);
-                labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_ARRAY_REQ);
+                labelAPIroute.startHttpTask(LabelAPIHolder.SESSION_ARRAY_REQ);
                 break;
             }
             case(R.id.dialog_scan_button): {
@@ -215,6 +214,16 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         }
     }
 
+    @Override
+    public void onSync() {
+        updateUI();
+    }
+
+    @Override
+    public void onFirstAccess() {
+
+    }
+
     /**
      * Overview: Callback fornita per il LabelAPIRouter.
      * Chiamata al ritorno dal task di connessione del client HTTP.
@@ -240,24 +249,6 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
             text.setText("Codice non valido, prova un'altro");
     }
 
-
-    @Override
-    public void onSessionExpired() {
-
-        labelAPIroute.startHttpTask(LabelAPIProtocol.SESSION_CREATE_REQ);
-    }
-
-    @Override
-    public void onSync() {
-
-        updateUI();
-    }
-
-    @Override
-    public void onFirstAccess() {
-
-    }
-
     /**
      * Overview: Callback fornita per il LabelAPIRouter.
      * Il task HTTP ha ricevuto un errore <= codice risposta!= 200, OK
@@ -268,6 +259,12 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         TextView text = (TextView) this.mainDialog.findViewById(R.id.dialog_text_view);
         if(text!=null)
             text.setText("Errore Connessione non presente");
+    }
+
+    @Override
+    public void onSessionExpired() {
+
+        labelAPIroute.startHttpTask(LabelAPIHolder.SESSION_CREATE_REQ);
     }
 
     /**

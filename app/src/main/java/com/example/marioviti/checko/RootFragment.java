@@ -78,7 +78,6 @@ public class RootFragment extends Fragment {
     /**
         Workaround dell'implementazione del FragmentPageAdapter.instantiateItem(...)
     */
-
     public static boolean swapInnerFragmentWith(int pos, boolean withSroll) {
 
         if( fgtPool.getCurr()==pos ) {

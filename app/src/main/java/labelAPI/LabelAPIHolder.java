@@ -5,7 +5,7 @@ import android.os.Bundle;
 /**
  * Created by marioviti on 22/08/15.
  */
-public class LabelAPIProtocol {
+public class LabelAPIHolder {
 
         public final static String URL_BASE = "http://api.foodessentials.com/";
         public static String API_KEY;

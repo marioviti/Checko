@@ -192,16 +192,18 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
                     ", SUM(" + DBOpenHelper.PROD_COL_FAT + ")" +
                     ", SUM(" + DBOpenHelper.PROD_COL_CAL + ")" +
                     ", " + DBOpenHelper.PROD_COL_TYPE +
-                    ", "  + DBOpenHelper.PROD_COL_DATE_FK_ID +
+                    ", " + DBOpenHelper.PROD_COL_DATE_FK_ID +
                     " FROM " + DBOpenHelper.DB_TABLE_PROD +
+                    " WHERE " + DBOpenHelper.PROD_COL_DATE_FK_ID + " = " + cacheDayID +
                     " GROUP BY " + DBOpenHelper.PROD_COL_TYPE +
-                    " HAVING " + DBOpenHelper.PROD_COL_DATE_FK_ID + " = " + cacheDayID +
                     " ;";
 
             cursor = rDb.rawQuery(query, null);
             while (cursor.moveToNext()) {
+                Log.d("CreateSummary","\n"+cursor.getInt(5));
                 fillSummaryValues(cursor, i, cursor.getInt(4));
             }
+            Log.d("CreateSummary",""+SupporHolder.calendarCache[i].toString());
             cacheDayID--;
             i++;
         }
@@ -282,8 +284,8 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
     @Override
     protected void onPostExecute(Object result) {
 
-        show(DBOpenHelper.DB_TABLE_CAL);
-        show(DBOpenHelper.DB_TABLE_PROD);
+        //show(DBOpenHelper.DB_TABLE_CAL);
+        //show(DBOpenHelper.DB_TABLE_PROD);
         caller.manageQueryRes(result, task);
     }
 }

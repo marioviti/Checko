@@ -30,7 +30,7 @@ import databaseHandling.DBTransactionAsyncTask;
 
 // http://api.foodessentials.com/labelarray?u=016000264601&sid=bc613ef6-c372-4303-b8e5-1a7a13fe7759&n=10&s=0&f=json&api_key=mc896havn4wp7rf73yu5sxxs
 
-public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
+public class LabelAPIRouter implements HttpResManager, DBQueryManager {
 
     private URL current_url;
     private String sessionID;
@@ -40,7 +40,7 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
 
     public LabelAPIRouter(LabelAPIServiceCallbacks caller, DBOpenHelper dbOpener, String APIKEY) {
 
-        LabelAPIProtocol.API_KEY="api_key="+APIKEY;
+        LabelAPIHolder.API_KEY="api_key="+APIKEY;
         this.caller = caller;
         this.dbOpener = dbOpener;
         createSessionStartURL();
@@ -53,23 +53,23 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
 
     public void createSessionStartURL() {
 
-        try { current_url = new URL(LabelAPIProtocol.URL_BASE+ LabelAPIProtocol.URL_COMM_START_SESSION+"?"+ LabelAPIProtocol.API_DETAILS+"&"+ LabelAPIProtocol.API_KEY);
+        try { current_url = new URL(LabelAPIHolder.URL_BASE+ LabelAPIHolder.URL_COMM_START_SESSION+"?"+ LabelAPIHolder.API_DETAILS+"&"+ LabelAPIHolder.API_KEY);
         }catch (MalformedURLException e){ e.printStackTrace(); Log.d("LabelApiHandler", "------------------------------------------------------URL malformato"); }
 
     }
 
     public void createSessionArrayURL(String GTIN) {
 
-        try { current_url = new URL(LabelAPIProtocol.URL_BASE+ LabelAPIProtocol.URL_COMM_ARRAY+"?u="+GTIN+"&sid="+this.sessionID+"&n=1&s=0&f=json&"+ LabelAPIProtocol.API_KEY);
+        try { current_url = new URL(LabelAPIHolder.URL_BASE+ LabelAPIHolder.URL_COMM_ARRAY+"?u="+GTIN+"&sid="+this.sessionID+"&n=1&s=0&f=json&"+ LabelAPIHolder.API_KEY);
         }catch (MalformedURLException e){ e.printStackTrace(); Log.d("LabelApiHandler", "------------------------------------------------------URL malformato"); }
 
     }
 
     public void startHttpTask (int task) {
 
-        if(task == LabelAPIProtocol.SESSION_CREATE_REQ)
+        if(task == LabelAPIHolder.SESSION_CREATE_REQ)
             sessionHasStarted = false;
-        new LabelAPIHttpTask( current_url, this, task ).execute();
+        new HttpReqAsyncTask( current_url, this, task ).execute();
     }
 
     @Override
@@ -78,17 +78,17 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
         try {
             String errCode = res.getString("result");
             switch(errCode){
-                case LabelAPIProtocol.TASK_ERR_CODE_OK:{
+                case LabelAPIHolder.TASK_ERR_CODE_OK:{
                     switchResTask(res, resType);
-                    if(resType!=LabelAPIProtocol.SESSION_CREATE_REQ)
+                    if(resType!= LabelAPIHolder.SESSION_CREATE_REQ)
                         caller.onReceivedData();
                     break;
                 }
-                case LabelAPIProtocol.TASK_ERR_CODE_NO_RES: {
+                case LabelAPIHolder.TASK_ERR_CODE_NO_RES: {
                     caller.onReceivedNullResponse();
                     break;
                 }
-                case LabelAPIProtocol.TASK_ERR_CODE_NO_CONNECTION: {
+                case LabelAPIHolder.TASK_ERR_CODE_NO_CONNECTION: {
                     caller.onHttpConnectionError();
                     break;
                 }
@@ -139,7 +139,7 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
 
         ContentValues contentValues;
         switch (resType) {
-            case LabelAPIProtocol.SESSION_CREATE_REQ: {
+            case LabelAPIHolder.SESSION_CREATE_REQ: {
                 try {
                     // SESSION STARTED
                     JSONObject values = (JSONObject)res.get("values");
@@ -152,7 +152,7 @@ public class LabelAPIRouter implements LabelAPIInterface, DBQueryManager {
                 }
                 break;
             }
-            case LabelAPIProtocol.SESSION_ARRAY_REQ: {
+            case LabelAPIHolder.SESSION_ARRAY_REQ: {
                 try {
                     JSONObject product = (JSONObject) ((JSONArray) ((JSONObject)res.get("values")).get("productsArray")).get(0);
                     contentValues = fillValues (product);

@@ -70,7 +70,7 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
                 }
             }
 
-            tvCARB = (TextView) v.findViewById(R.id.text_CAL);
+            tvCARB = (TextView) v.findViewById(R.id.text_CARB);
             tvPROT = (TextView) v.findViewById(R.id.text_PROT);
             tvFAT = (TextView) v.findViewById(R.id.text_FAT);
             tvCAL = (TextView) v.findViewById(R.id.text_CAL);

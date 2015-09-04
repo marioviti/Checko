@@ -17,26 +17,26 @@ import java.util.Map;
 /**
  * Created by marioviti on 22/08/15.
  */
-public class LabelAPIHttpTask extends AsyncTask<String,String,JSONObject> {
+public class HttpReqAsyncTask extends AsyncTask<String,String,JSONObject> {
 
-    private LabelAPIInterface caller;
+    private HttpResManager caller;
     private URL url;
     private volatile int status;
     private int taskType;
     private int taskID;
 
-    public LabelAPIHttpTask(URL url, LabelAPIInterface caller, int taskType) {
+    public HttpReqAsyncTask(URL url, HttpResManager caller, int taskType) {
 
-        this.taskID = LabelAPIProtocol.getIncTaskID();
+        this.taskID = LabelAPIHolder.getIncTaskID();
         this.caller = caller;
-        this.status = LabelAPIProtocol.TASK_STARTED;
+        this.status = LabelAPIHolder.TASK_STARTED;
         this.taskType = taskType;
         this.url = url;
     }
 
     JSONObject elaborateReq (URL url) throws java.net.ConnectException{
 
-        //Log.d("LabelAPIHttpTask", "------------------------------URL: "+ url.toString());
+        //Log.d("HttpReqAsyncTask", "------------------------------URL: "+ url.toString());
         InputStream is = null;
         JSONObject jsonObject = null;
         BufferedReader r;
@@ -48,10 +48,10 @@ public class LabelAPIHttpTask extends AsyncTask<String,String,JSONObject> {
             Map mp = conn.getHeaderFields();
             Object[] ks = conn.getHeaderFields().keySet().toArray();
             String RET_CODE = mp.get(ks[0]).toString();
-            //Log.d("LabelAPIHttpTask", "------------------------------HTTP: "+ ks[0] + " -> " + RET_CODE);
+            //Log.d("HttpReqAsyncTask", "------------------------------HTTP: "+ ks[0] + " -> " + RET_CODE);
 
             if(!RET_CODE.contains("200")){
-                Log.d("LabelAPIHttpTask", "------------------------------ERRORE CONNESSIONE"+RET_CODE);
+                Log.d("HttpReqAsyncTask", "------------------------------ERRORE CONNESSIONE"+RET_CODE);
                 throw new java.net.ConnectException();
             }
 
@@ -64,17 +64,17 @@ public class LabelAPIHttpTask extends AsyncTask<String,String,JSONObject> {
             jsonObject = new JSONObject(total.toString());
         }
         catch ( JSONException e ) {
-            e.printStackTrace(); status = LabelAPIProtocol.TASK_ERROR; LabelAPIProtocol.ERR_STACK.putString("LabelAPIHttpReq_"+taskID, "JSONException");
+            e.printStackTrace(); status = LabelAPIHolder.TASK_ERROR; LabelAPIHolder.ERR_STACK.putString("LabelAPIHttpReq_"+taskID, "JSONException");
         }
         catch ( IOException e ) {
-            e.printStackTrace(); status = LabelAPIProtocol.TASK_ERROR; LabelAPIProtocol.ERR_STACK.putString("LabelAPIHttpReq_"+taskID, "IOException");
+            e.printStackTrace(); status = LabelAPIHolder.TASK_ERROR; LabelAPIHolder.ERR_STACK.putString("LabelAPIHttpReq_"+taskID, "IOException");
         }
         catch (Exception e) {
-            e.printStackTrace(); status = LabelAPIProtocol.TASK_ERROR; LabelAPIProtocol.ERR_STACK.putString("LabelAPIHttpReq_"+taskID, "Exception");
+            e.printStackTrace(); status = LabelAPIHolder.TASK_ERROR; LabelAPIHolder.ERR_STACK.putString("LabelAPIHttpReq_"+taskID, "Exception");
         }
 
-        if(status ==  LabelAPIProtocol.TASK_STARTED)
-            this.status = LabelAPIProtocol.TASK_ALL_DONE;
+        if(status ==  LabelAPIHolder.TASK_STARTED)
+            this.status = LabelAPIHolder.TASK_ALL_DONE;
 
         return jsonObject;
     }
@@ -85,15 +85,15 @@ public class LabelAPIHttpTask extends AsyncTask<String,String,JSONObject> {
         try {
             JSONObject app = elaborateReq(this.url);
             if(app!=null){
-                res.put("result", LabelAPIProtocol.TASK_ERR_CODE_OK);
+                res.put("result", LabelAPIHolder.TASK_ERR_CODE_OK);
                 res.put("values",app);
             } else {
-                res.put("result", LabelAPIProtocol.TASK_ERR_CODE_NO_RES);
+                res.put("result", LabelAPIHolder.TASK_ERR_CODE_NO_RES);
             }
 
         }catch ( java.net.ConnectException e1) {
             try {
-                res.put("result", LabelAPIProtocol.TASK_ERR_CODE_NO_CONNECTION);
+                res.put("result", LabelAPIHolder.TASK_ERR_CODE_NO_CONNECTION);
             }
             catch ( JSONException eIn2) {
                 eIn2.printStackTrace();
