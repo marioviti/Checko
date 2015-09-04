@@ -1,6 +1,13 @@
 <resources>
-    <string name="app_name">Checko</string>
+    <string name="app_name">Diet Diary</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="tutorial">Per inserire un alimento in una categoria: premere a lungo uno dei bottoni categoria.
+    </string>
+    <string name="tutorial2">
+        Il cerchio indica in percentuale la quantità prodotti della categoria, per esempio la blu,
+        le barre i nutritivi presenti in quella categoria.
+        Ogni sommario è giornaliero e il giorno può essere selezionato nel calendaro.
+    </string>
 </resources>

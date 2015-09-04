@@ -12,7 +12,7 @@ import android.util.Log;
 public class DBOpenHelper extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "LabelApiDatabaseV1.db";
-    public static int DB_V = 20;
+    public static int DB_V = 24;
 
     public static final String DB_TABLE_CAL = "calendar";
     public static final String CAL_COL_PK = "c_id";
@@ -89,14 +89,24 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     }
 
     private void createDummyData(SQLiteDatabase db) {
-        String query = "INSERT INTO " + DB_TABLE_CAL +
-                " (c_date, type0, type1, type2, type3, type4  )"+
-                " VALUES ( '2015-08-25','0','2','1','0','1');";
+        String query = filldate("08","01");
         db.execSQL(query);
-        query = "INSERT INTO " + DB_TABLE_CAL +
-                " (c_date, type0, type1, type2, type3, type4  )"+
-                " VALUES ( '2015-08-29','1','0','1','1','0');";
-        db.execSQL(query);
+        query = filldate("08","02");db.execSQL(query);
+        query = filldate("08","03");db.execSQL(query);
+        query = filldate("08","04");db.execSQL(query);
+        query = filldate("08","05");db.execSQL(query);
+        query = filldate("08","06");db.execSQL(query);
+        query = filldate("08","07");db.execSQL(query);
+        query = filldate("08","08");db.execSQL(query);
+        query = filldate("08","09");db.execSQL(query);
+        query = filldate("08","10");db.execSQL(query);
+        query = filldate("08","11");db.execSQL(query);
+        query = filldate("08","12");db.execSQL(query);
+        query = filldate("09","10");db.execSQL(query);
+        query = filldate("09","11");db.execSQL(query);
+        query = filldate("09","12");db.execSQL(query);
+
+
 
         query = fillProd(1,1);
         db.execSQL(query);
@@ -118,5 +128,11 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         return "INSERT INTO " + DB_TABLE_PROD +
                 "(upc, product_name, p_type, Total_Carbohydrate, Protein, Total_Fat, Calories, p_date_id)" +
                 " VALUES ('1234567890', 'food', '"+i+"', '10.0', '5.0', '5.0', '10.0' , '"+d+"')";
+    }
+
+    private String filldate(String d,String i) {
+        return "INSERT INTO " + DB_TABLE_CAL +
+                " (c_date, type0, type1, type2, type3, type4  )"+
+                " VALUES ( '2015-"+d+"-"+i+"','1','0','1','1','0');";
     }
 }

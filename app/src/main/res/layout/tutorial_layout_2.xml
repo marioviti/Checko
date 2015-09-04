@@ -8,23 +8,23 @@
     <TextView
         android:layout_marginTop="15dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginBottom="15dp"
         android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:textColor="@android:color/white"
         android:textSize="16sp"
-        android:id="@+id/tutorial_textView"
-        android:text="@string/tutorial"
+        android:id="@+id/tutorial_textView2"
+        android:text="@string/tutorial2"
         android:layout_gravity="center_horizontal" />
 
     <ImageView
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:background="@drawable/tut01" />
+        android:id="@+id/imageView2"
+        android:background="@drawable/tut02" />
 
     <TextView
         android:layout_marginTop="10dp"
@@ -36,7 +36,7 @@
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:text="CAPITO"
-        android:id="@+id/tutorial_textView_dismiss"
+        android:id="@+id/tutorial_textView_dismiss2"
         android:layout_gravity="center_horizontal" />
 
 

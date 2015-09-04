@@ -10,6 +10,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     private MyFragmentPagerAdapter pagerAdapter;
     private static int PAG_NUM = 3;
     private LabelAPIRouter labelAPIroute;
-    private Dialog mainDialog;
+    private Dialog mainDialog, tut1dialog, tut2dialog;
     private DBOpenHelper myOpenHelper;
 
     /**
@@ -79,8 +82,15 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         }
 
         labelAPIroute.sync(); /** updateUI() viene chiamato come callback dopo il labelAPIroute.sync() */
-
         //Log.d("onCreate", "---------------------------MAIN_ACTIVITY");
+    }
+
+    /**
+     * usato per il refresh delle date
+     */
+    public void sync() {
+        CalendarFragment.clearCalendar();
+        labelAPIroute.sync();
     }
 
     /**
@@ -96,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         pagerAdapter = new MyFragmentPagerAdapter(fm,PAG_NUM);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOffscreenPageLimit(PAG_NUM);
-        viewPager.setCurrentItem(SupporHolder.currentPage,false);
+        viewPager.setCurrentItem(SupporHolder.currentPage, false);
     }
 
     @Override
@@ -125,6 +135,14 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         savedInstanceState.putInt("currentPage", SupporHolder.currentPage);
 
         //Log.d("onSaveInstanceState", "---------------------------MAIN_ACTIVITY");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.mani_activity_actions, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -192,6 +210,22 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
                 IntentIntegrator scanIntegrator = new IntentIntegrator(this);
                 scanIntegrator.initiateScan();
+                break;
+            }
+            case (R.id.tutorial_textView_dismiss): {
+                tut1dialog.dismiss();
+                tut2dialog = new Dialog(MainActivity.this);
+                tut2dialog.setContentView(R.layout.tutorial_layout_2);
+                tut2dialog.setTitle("I sommari");
+                tut2dialog.show();
+                TextView capito = (TextView)tut2dialog.findViewById(R.id.tutorial_textView_dismiss2);
+                capito.setOnClickListener(this);
+
+                break;
+            }
+            case (R.id.tutorial_textView_dismiss2): {
+                tut2dialog.dismiss();
+                break;
             }
         }
     }
@@ -222,6 +256,12 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     @Override
     public void onFirstAccess() {
 
+        tut1dialog = new Dialog(MainActivity.this);
+        tut1dialog.setTitle("Benvenuto!");
+        tut1dialog.setContentView(R.layout.tutorial_layout);
+        TextView capito = (TextView)tut1dialog.findViewById(R.id.tutorial_textView_dismiss);
+        capito.setOnClickListener(this);
+        tut1dialog.show();
     }
 
     /**

@@ -27,67 +27,60 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
     private static View.OnClickListener myself;
     private static CalendarListFragmentAdapter caa;
     private static FragmentSwapper caller;
+    private static MainActivity callerContext;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         this.caller= (FragmentSwapper)activity;
+        callerContext = (MainActivity)activity;
     }
 
     @Override
     public void onCreate(Bundle si) {
         super.onCreate(si);
         myself = this;
-        //Log.d("onCreate", "---------------------------CALENDAR_FRAGMENT "+this.getTag());
+        Log.d("onCreate", "---------------------------CALENDAR_FRAGMENT "+this.getTag());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Log.d("onDestroy", "---------------------------CALENDAR_FRAGMENT");
+        Log.d("onDestroy", "---------------------------CALENDAR_FRAGMENT");
     }
 
     @Override
     public View onCreateView (LayoutInflater li, ViewGroup container, Bundle si) {
 
-        CalendarEntry[] entries = null;
-        int active = 0;
-        for( int i =0; i<SupporHolder.calendarCache.length; i++) {
-            if(SupporHolder.calendarCache[i]!=null)
-                active++;
-        }
-        if (active!=0) {
-            entries = new CalendarEntry[active];
-            for (int i = 0; i < active; i++) {
-                entries[i] = SupporHolder.calendarCache[i];
-            }
-        }
-        caa = new CalendarListFragmentAdapter(li, li.getContext(), R.layout.custom_row_calendar, entries);
-        caa.data=entries;
+        int coutActiveDays = 0;
+        for (int i= 0; i<SupporHolder.calendarCache.length; i++)
+            if (SupporHolder.calendarCache[i]!=null)
+                coutActiveDays++;
+
+        CalendarEntry[] values = new CalendarEntry[coutActiveDays];
+
+        for (int i= 0; i<values.length; i++)
+            values[i]=SupporHolder.calendarCache[i];
+
+        caa = new CalendarListFragmentAdapter(li, li.getContext(), R.layout.custom_row_calendar, values);
+        caa.data=values;
         setListAdapter(caa);
+        caa.notifyDataSetChanged();
         view = super.onCreateView(li, container, si);
 
-        //Log.d("onCreateView", "---------------------------CALENDAR_FRAGMENT " + this.getTag());
+        Log.d("onCreateView", "---------------------------CALENDAR_FRAGMENT " + this.getTag());
 
         return view;
     }
 
-    public static void dataUpdate() {
+    public void show(CalendarEntry[] entry) {
+        for (int i = 0 ; i<entry.length; i++)
+            if(entry[i]!=null)
+                Log.d("show","\n"+entry[i].toString());
+    }
 
-        CalendarEntry[] entries = null;
-        int active = 0;
-        for( int i =0; i<SupporHolder.calendarCache.length; i++) {
-            if(SupporHolder.calendarCache[i]!=null)
-                active++;
-        }
-        if (active!=0) {
-            entries = new CalendarEntry[active];
-            for (int i = 0; i < active; i++) {
-                entries[i] = SupporHolder.calendarCache[i];
-            }
-        }
-        caa.data=entries;
-        caa.notifyDataSetChanged();
+    public static void clearCalendar () {
+        caa=null;
     }
 
     public static boolean updateDayEntry (int currentDayCacheId ) {
@@ -144,7 +137,7 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
         }
         return j;
     }
-    /*
+    /**
     EFFECTS: animazioni on touch delle entries del calendario
      */
     public void animateCalendar (CalendarRowBarView in, CalendarRowBarView out){
@@ -163,12 +156,12 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
             }
         }
     }
-    /*
+    /**
     OVERVIEW: sottoclasse dell ArrayAdapter.
 
     MODIFY: assegna Listener agli items del calendar rendendoli cliccabili.
      */
-    private class CalendarListFragmentAdapter extends ArrayAdapter<CalendarEntry> {
+    private class CalendarListFragmentAdapter extends ArrayAdapter<CalendarEntry> implements View.OnClickListener{
 
         private int layoutResourceId;
         private LayoutInflater li;
@@ -181,7 +174,8 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
             this.li = li;
             this.layoutResourceId = layoutResourceId;
             this.data = data;
-            viewRows = new ArrayList<>();
+            viewRows = new ArrayList<>(data.length);
+            viewRows.size();
             size = 0;
         }
 
@@ -190,25 +184,42 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
         }
 
         @Override
+        public int getCount() {
+            return data.length;
+        }
+
+        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View row = convertView;
-            if(row == null) {
+            if(data[size]!=null) {
+                Log.d("asdsadas",viewRows.toString()+" "+position);
                 row = li.inflate(layoutResourceId, parent, false);
-                TextView day = (TextView)row.findViewById(R.id.row_textView);
-                CalendarEntry entryDay = data[position];
-                CalendarRowBarView crow = (CalendarRowBarView)row.findViewById(R.id.row_custom_view);
+                TextView day = (TextView) row.findViewById(R.id.row_textView);
+                CalendarEntry entryDay = data[size];
+                CalendarRowBarView crow = (CalendarRowBarView) row.findViewById(R.id.row_custom_view);
                 crow.setOnClickListener(myself);
-
                 day.setText(entryDay.day);
                 crow.setValues(entryDay.values);
                 crow.setDate(entryDay.day);
                 crow.setPositionDATECacheID(position);
-                if(crow.getPositionDATECacheID()==SupporHolder.currentCacheDayID)
+                if (crow.getPositionDATECacheID() == SupporHolder.currentCacheDayID)
                     crow.setAlphaVal(0);
-                viewRows.add(position, crow);
-                this.size ++;
+                viewRows.add(size, crow);
+                if (size==9) {
+                    day.setText("più giorni");
+                    crow.setValues(new int[]{1, 1, 1, 1, 1});
+                    crow.setOnClickListener(this);
+                }
             }
+            this.size++;
             return row;
+        }
+
+        @Override
+        public void onClick(View v) {
+            SupporHolder.latestDay = SupporHolder.calendarCache[9].day;
+            SupporHolder.latestDayID = SupporHolder.calendarCache[9].dayID;
+            callerContext.sync();
         }
     }
 }

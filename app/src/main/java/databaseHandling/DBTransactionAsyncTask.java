@@ -147,10 +147,13 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
         String query = "SELECT * FROM " + DBOpenHelper.DB_TABLE_CAL +
                 " WHERE "+ DBOpenHelper.CAL_COL_PK +
                 " <= " + SupporHolder.latestDayID +
-                " ORDER BY " + DBOpenHelper.CAL_COL_PK +
+                " ORDER BY " + DBOpenHelper.CAL_COL_DATE +
                 " DESC LIMIT "+cachelimit+";";
 
         Cursor cursor = rDb.rawQuery(query, null);
+
+        for(int i = 0; i<SupporHolder.calendarCache.length; i++)
+            SupporHolder.calendarCache[i]=null;
 
         int i = 0;
         while (cursor.moveToNext() && i<cachelimit) {
@@ -163,9 +166,7 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
             }
             i++;
         }
-        for(int j = i; j<SupporHolder.calendarCache.length; j++) {
-            SupporHolder.calendarCache[j]=null;
-        }
+
         SupporHolder.currentCacheDayID = 0;
         cursor.close();
         createCalendarCreateSummary(rDb);
@@ -203,7 +204,7 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
                 Log.d("CreateSummary","\n"+cursor.getInt(5));
                 fillSummaryValues(cursor, i, cursor.getInt(4));
             }
-            Log.d("CreateSummary",""+SupporHolder.calendarCache[i].toString());
+            //Log.d("CreateSummary",""+SupporHolder.calendarCache[i].toString());
             cacheDayID--;
             i++;
         }

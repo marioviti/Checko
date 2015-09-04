@@ -22,7 +22,7 @@ public class SupporHolder {
     public static final int cacheDayLimit = 10;
 
     public static short globalTypeVariable = -1;
-    public static CalendarEntry[] calendarCache = new CalendarEntry[10];
+    public static CalendarEntry[] calendarCache = new CalendarEntry[cacheDayLimit];
 
     public static final int MENU_FRAG = 0;
     public static final int ROOT_FRAG = 1;

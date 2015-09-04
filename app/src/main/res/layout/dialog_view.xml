@@ -1,10 +1,12 @@
 <GridLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_gravity="center_horizontal"
-    android:layout_width="wrap_content"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:background="@color/back_ground"
     android:columnCount="4"
-    android:rowCount="5">
+    android:rowCount="5"
+    android:id="@+id/main_dialog">
 
     <TextView
         android:layout_gravity="center_horizontal"
@@ -12,6 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
+        android:textColor="@android:color/white"
         android:id="@+id/dialog_text_view"
         android:layout_row="0"
         android:layout_column="1"
@@ -19,8 +22,11 @@
 
 
     <EditText
+        android:layout_marginLeft="25dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
+        android:textColor="@android:color/white"
+        android:textColorHint="@color/hint_grey"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"

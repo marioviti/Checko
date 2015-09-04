@@ -8,6 +8,9 @@
     android:weightSum="1">
 
     <TextView android:id="@+id/tvLabel"
+        android:textSize="20sp"
+        android:layout_marginLeft="20dp"
+        android:textColor="@android:color/white"
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -31,6 +34,7 @@
 
         <TextView
             android:id="@+id/text_CARB_label"
+            android:layout_marginTop="20dp"
             android:text="Carb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,6 +44,7 @@
             android:layout_below="@id/circular_indicator"/>
 
             <TextView
+                android:layout_marginTop="20dp"
                 android:id="@+id/text_CARB"
                 android:text="0gr"
                 android:layout_width="wrap_content"
@@ -123,6 +128,10 @@
         android:layout_alignBottom="@+id/text_CAL"
         android:layout_alignRight="@+id/circular_indicator"
         android:layout_alignEnd="@+id/circular_indicator" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 
 </RelativeLayout>
