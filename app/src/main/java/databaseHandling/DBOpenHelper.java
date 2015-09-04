@@ -106,8 +106,6 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         query = filldate("09","11");db.execSQL(query);
         query = filldate("09","12");db.execSQL(query);
 
-
-
         query = fillProd(1,1);
         db.execSQL(query);
         db.execSQL(query);

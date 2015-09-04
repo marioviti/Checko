@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     private LabelAPIRouter labelAPIroute;
     private Dialog mainDialog, tut1dialog, tut2dialog;
     private DBOpenHelper myOpenHelper;
+    private int currentPage;
 
     /**
      * OVERVIEW: Creazione/ripristino del database con l'uso dell'helper.

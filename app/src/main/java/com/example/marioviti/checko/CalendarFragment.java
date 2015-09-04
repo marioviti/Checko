@@ -28,6 +28,8 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
     private static CalendarListFragmentAdapter caa;
     private static FragmentSwapper caller;
     private static MainActivity callerContext;
+    private String calendarNextDay = "";
+    private int calendarNextDayID = -1;
 
     @Override
     public void onAttach(Activity activity) {
@@ -190,9 +192,10 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+
             View row = convertView;
             if(data[size]!=null) {
-                Log.d("asdsadas",viewRows.toString()+" "+position);
+
                 row = li.inflate(layoutResourceId, parent, false);
                 TextView day = (TextView) row.findViewById(R.id.row_textView);
                 CalendarEntry entryDay = data[size];
@@ -201,13 +204,14 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
                 day.setText(entryDay.day);
                 crow.setValues(entryDay.values);
                 crow.setDate(entryDay.day);
-                crow.setPositionDATECacheID(position);
+                crow.setPositionDATECacheID(size);
                 if (crow.getPositionDATECacheID() == SupporHolder.currentCacheDayID)
                     crow.setAlphaVal(0);
                 viewRows.add(size, crow);
                 if (size==9) {
                     day.setText("più giorni");
                     crow.setValues(new int[]{1, 1, 1, 1, 1});
+                    crow.setDate("più giorni");
                     crow.setOnClickListener(this);
                 }
             }
@@ -217,9 +221,19 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
 
         @Override
         public void onClick(View v) {
-            SupporHolder.latestDay = SupporHolder.calendarCache[9].day;
-            SupporHolder.latestDayID = SupporHolder.calendarCache[9].dayID;
-            callerContext.sync();
+            String command = ((CalendarRowBarView)v).getDate();
+
+            switch (command) {
+                case "più giorni" : {
+                    calendarNextDay = SupporHolder.latestDay;
+                    calendarNextDayID = SupporHolder.latestDayID;
+                    SupporHolder.latestDay = SupporHolder.calendarCache[9].day;
+                    SupporHolder.latestDayID = SupporHolder.calendarCache[9].dayID;
+                    SupporHolder.currentPage = SupporHolder.CALEDAR_FRAG;
+                    callerContext.sync();
+                    break;
+                }
+            }
         }
     }
 }
