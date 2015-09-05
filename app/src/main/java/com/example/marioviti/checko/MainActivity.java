@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         setContentView(R.layout.activity_main);
 
         // CONNECTION SESSION
-        myOpenHelper.debug = true;
+        //myOpenHelper.debug = true;
         myOpenHelper = new DBOpenHelper(MainActivity.this, DBOpenHelper.DB_NAME, null, DBOpenHelper.DB_V);
         labelAPIroute = new LabelAPIRouter(this, myOpenHelper, "mc896havn4wp7rf73yu5sxxs");
         mainDialog = new Dialog(MainActivity.this);
@@ -69,6 +69,10 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         // RESTORE STATE
         if (savedInstanceState == null) {
             DisplayMetrics metrics = getResources().getDisplayMetrics();
+            SupporHolder.frameHeight = (int)Math.ceil(metrics.heightPixels/metrics.scaledDensity);
+            SupporHolder.frameWidth = (int)Math.ceil(metrics.widthPixels/metrics.scaledDensity);
+            Log.d("metrics","height="+SupporHolder.frameHeight +"\n"+"width="+SupporHolder.frameWidth);
+
             //Log.d("onCreate", "---------------------------FIRST ACCESS METRICS: " + metrics.toString());
 
         }else {
@@ -120,6 +124,9 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
             //Log.d("onConfigurationChanged", "---------------------------MAIN_ACTIVITY_ORIENTATION_PORTRAIT: " + newConfig.toString());
         }
+        SupporHolder.frameHeight = newConfig.screenHeightDp;
+        SupporHolder.frameWidth = newConfig.screenWidthDp;
+        Log.d("metrics","height="+SupporHolder.frameHeight +"\n"+"width="+SupporHolder.frameWidth);
     }
 
     @Override
@@ -239,8 +246,8 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     public void onRefreshedData(int pos, int task) {
 
         if(pos!=-1) {
-
             if(task== DBQueryManager.NEW_DATE) {
+                SupporHolder.currentPage=SupporHolder.CALEDAR_FRAG;
                 updateUI();
             }else {
                 RootFragment.swapInnerFragmentWith(pos, false);
@@ -274,7 +281,8 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     public void onReceivedData() {
 
         this.mainDialog.dismiss();
-        viewPager.setCurrentItem(SupporHolder.ROOT_FRAG);
+        if(SupporHolder.latestDayID!=-1);
+            viewPager.setCurrentItem(SupporHolder.ROOT_FRAG);
     }
 
     /**

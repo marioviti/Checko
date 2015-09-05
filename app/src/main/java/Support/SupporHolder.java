@@ -28,6 +28,9 @@ public class SupporHolder {
     public static final int ROOT_FRAG = 1;
     public static final int CALEDAR_FRAG = 2;
 
+    public static int frameHeight;
+    public static int frameWidth;
+
     public static int currentPage = MENU_FRAG;
 
 }

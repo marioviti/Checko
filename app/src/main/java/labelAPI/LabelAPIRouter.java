@@ -79,16 +79,19 @@ public class LabelAPIRouter implements HttpResManager, DBQueryManager {
             String errCode = res.getString("result");
             switch(errCode){
                 case LabelAPIHolder.TASK_ERR_CODE_OK:{
+                    Log.d("manageHttpRes", "--------------------------------"+errCode);
                     switchResTask(res, resType);
                     if(resType!= LabelAPIHolder.SESSION_CREATE_REQ)
                         caller.onReceivedData();
                     break;
                 }
                 case LabelAPIHolder.TASK_ERR_CODE_NO_RES: {
+                    Log.d("manageHttpRes", "--------------------------------"+errCode);
                     caller.onReceivedNullResponse();
                     break;
                 }
                 case LabelAPIHolder.TASK_ERR_CODE_NO_CONNECTION: {
+                    Log.d("manageHttpRes", "--------------------------------"+errCode);
                     caller.onHttpConnectionError();
                     break;
                 }
@@ -154,6 +157,7 @@ public class LabelAPIRouter implements HttpResManager, DBQueryManager {
             }
             case LabelAPIHolder.SESSION_ARRAY_REQ: {
                 try {
+                    // LANCIA TASK DATABASE
                     JSONObject product = (JSONObject) ((JSONArray) ((JSONObject)res.get("values")).get("productsArray")).get(0);
                     contentValues = fillValues (product);
                     startDBTask(contentValues,DBQueryManager.INSERT);
@@ -168,6 +172,7 @@ public class LabelAPIRouter implements HttpResManager, DBQueryManager {
     }
 
     public void startDBTask (ContentValues values, int task) {
+
         new DBTransactionAsyncTask( this, this.dbOpener, task ).execute(values);
     }
 
@@ -176,13 +181,10 @@ public class LabelAPIRouter implements HttpResManager, DBQueryManager {
 
         if(task == DBQueryManager.INSERT || task == DBQueryManager.NEW_DATE) {
             caller.onRefreshedData(SupporHolder.globalTypeVariable, task);
-        }
-
-        if(task == DBQueryManager.REFRESH_FETCH) {
-            caller.onRefreshedData(SupporHolder.globalTypeVariable, task);
             if(SupporHolder.latestDayID==-1)
                 caller.onFirstAccess();
         }
+
         if(task == DBQueryManager.REFRESH_FETCH_SYNC) {
             //Signal upper UI using the LabelAPIServiceCallbacks
             caller.onSync();
@@ -192,6 +194,7 @@ public class LabelAPIRouter implements HttpResManager, DBQueryManager {
     }
 
     public void sync() {
+
         startDBTask(null,DBQueryManager.REFRESH_FETCH_SYNC);
     }
 }
