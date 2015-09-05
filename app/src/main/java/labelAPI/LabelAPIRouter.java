@@ -46,6 +46,13 @@ public class LabelAPIRouter implements HttpResManager, DBQueryManager {
         createSessionStartURL();
     }
 
+    public void createProfile(float BMR) {
+        ContentValues values = new ContentValues();
+        values.put(DBOpenHelper.PROF_COL_PK,1);
+        values.put(DBOpenHelper.PROF_COL_BMR,BMR);
+        new DBTransactionAsyncTask( this, this.dbOpener, PROFILE ).execute(values);
+    }
+
     public boolean hasSessionStarted() {
 
         return sessionHasStarted;
@@ -183,6 +190,10 @@ public class LabelAPIRouter implements HttpResManager, DBQueryManager {
             caller.onRefreshedData(SupporHolder.globalTypeVariable, task);
             if(SupporHolder.latestDayID==-1)
                 caller.onFirstAccess();
+        }
+
+        if(task == DBQueryManager.PROFILE) {
+            caller.onRefreshedData(SupporHolder.globalTypeVariable, task);
         }
 
         if(task == DBQueryManager.REFRESH_FETCH_SYNC) {

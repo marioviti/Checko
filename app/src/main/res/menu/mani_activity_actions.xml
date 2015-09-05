@@ -1,7 +1,7 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item
-        android:id="@+id/action_search"
-        android:icon="@drawable/bar_logo"
-        android:title="logo"
-        />
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto" >
+    <item android:id="@+id/profile_action"
+        android:icon="@drawable/profile_action"
+        android:title="profilo"
+        yourapp:showAsAction="ifRoom" />
 </menu>

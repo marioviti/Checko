@@ -1,6 +1,7 @@
 package com.example.marioviti.checko;
 
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
@@ -13,15 +14,18 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import Support.BMRCalculation;
 import Support.SupporHolder;
 import databaseHandling.DBOpenHelper;
 import databaseHandling.DBQueryManager;
@@ -58,6 +62,11 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.bar_logo);
+
         setContentView(R.layout.activity_main);
 
         // CONNECTION SESSION
@@ -126,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         }
         SupporHolder.frameHeight = newConfig.screenHeightDp;
         SupporHolder.frameWidth = newConfig.screenWidthDp;
-        Log.d("metrics","height="+SupporHolder.frameHeight +"\n"+"width="+SupporHolder.frameWidth);
+        Log.d("metrics", "height=" + SupporHolder.frameHeight + "\n" + "width=" + SupporHolder.frameWidth);
     }
 
     @Override
@@ -151,6 +160,29 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.mani_activity_actions, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.profile_action:
+                profileDialogLaunch();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void profileDialogLaunch() {
+
+        this.mainDialog.setTitle("Il tuo profilo");
+        this.mainDialog.setContentView(R.layout.profile_layout);
+        Button send = (Button) this.mainDialog.findViewById(R.id.button_profile_send);
+        Button delete = (Button) this.mainDialog.findViewById(R.id.button_profile_delete);
+        delete.setOnClickListener(this);
+        send.setOnClickListener(this);
+        this.mainDialog.show();
     }
 
     @Override
@@ -220,6 +252,31 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
                 scanIntegrator.initiateScan();
                 break;
             }
+            case (R.id.button_profile_send): {
+
+                String inputA = ((EditText)mainDialog.findViewById(R.id.editText_profile_age)).getText().toString();
+                if(!inputA.equals("")) {
+                    int A = Integer.parseInt(inputA);
+                    int Wkg = Integer.parseInt(((EditText) mainDialog.findViewById(R.id.editText_profile_weight)).getText().toString());
+                    int Hcm = Integer.parseInt(((EditText) mainDialog.findViewById(R.id.editText_profile_height)).getText().toString());
+                    boolean male = ((RadioButton) mainDialog.findViewById(R.id.radioButton_profile_M)).isChecked();
+                    if (male)
+                        SupporHolder.BMR = BMRCalculation.HarrisBenedictMaleCal(Hcm, Wkg, A);
+                    else
+                        SupporHolder.BMR = BMRCalculation.HarrisBenedictFemaleCal(Hcm, Wkg, A);
+                    ContentValues values = new ContentValues();
+                    values.put(DBOpenHelper.PROF_COL_PK,1);
+                    values.put(DBOpenHelper.PROF_COL_BMR,SupporHolder.BMR);
+                    labelAPIroute.startDBTask(values,DBQueryManager.PROFILE);
+                    mainDialog.dismiss();
+                }
+                mainDialog.setTitle("Inserire tutti i valori numerici");
+                break;
+            }
+            case (R.id.button_profile_delete): {
+                mainDialog.dismiss();
+                break;
+            }
             case (R.id.tutorial_textView_dismiss): {
                 tut1dialog.dismiss();
                 tut2dialog = new Dialog(MainActivity.this);
@@ -247,11 +304,19 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
         if(pos!=-1) {
             if(task== DBQueryManager.NEW_DATE) {
+
                 SupporHolder.currentPage=SupporHolder.CALEDAR_FRAG;
                 updateUI();
+            }
+            else if(task == DBQueryManager.PROFILE) {
+
+                RootFragment.swapInnerFragmentWith(pos, false);
+
             }else {
+
                 RootFragment.swapInnerFragmentWith(pos, false);
                 CalendarFragment.updateDayEntry(SupporHolder.currentCacheDayID);
+
             }
         }
     }

@@ -8,6 +8,8 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 
+import Support.SupporHolder;
+
 /**
  * Created by marioviti on 31/08/15.
  */
@@ -49,14 +51,15 @@ public class HistogramView extends View{
 
     private void setNormalizedValues() {
         float max = -1;
-        for(int i= 0; i<values.length; i++) {
+        for(int i= 0; i<values.length-1; i++) {
             if (values[i]>max)
                 max = values[i];
         }
         if(max!=0) {
-            for (int i = 0; i < values.length; i++) {
+            for (int i = 0; i < values.length - 1; i++) {
                 normalizedValues[i] = values[i] / max;
             }
+            normalizedValues[values.length - 1] = values[values.length - 1] / SupporHolder.BMR;
         }
         else if (max < 0 && max > -1){
             normalizedValues = new float[]{5, 5, 5, 5};

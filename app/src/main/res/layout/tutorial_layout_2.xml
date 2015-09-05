@@ -11,10 +11,9 @@
         android:layout_marginRight="15dp"
         android:layout_marginBottom="15dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.3"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
         android:textColor="@android:color/white"
-        android:textSize="16sp"
         android:id="@+id/tutorial_textView2"
         android:text="@string/tutorial2"
         android:layout_gravity="center_horizontal" />
@@ -22,18 +21,17 @@
     <ImageView
         android:layout_gravity="center"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
         android:id="@+id/imageView2"
-        android:layout_weight="0.5"
         android:background="@drawable/tut02" />
 
     <TextView
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="bottom"
-        android:layout_weight="0.2"
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:text="CAPITO"

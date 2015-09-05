@@ -12,7 +12,11 @@ import android.util.Log;
 public class DBOpenHelper extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "LabelApiDatabaseV1.db";
-    public static int DB_V = 27;
+    public static int DB_V = 29;
+
+    public static final String DB_TABLE_PROFILE = "profile";
+    public static final String PROF_COL_PK = "p_id";
+    public static final String PROF_COL_BMR = "BMR";
 
     public static final String DB_TABLE_CAL = "calendar";
     public static final String CAL_COL_PK = "c_id";
@@ -35,8 +39,14 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     public static final String PROD_COL_DATE_FK_ID = "p_date_id";
     public static boolean debug = false;
 
+    private String DATABASE_DELETE_PROF = "DROP TABLE IF EXISTS " + DB_TABLE_PROFILE + " ;";
     private String DATABASE_DELETE_PROD = "DROP TABLE IF EXISTS " + DB_TABLE_PROD + " ;";
     private String DATABASE_DELETE_CAL = "DROP TABLE IF EXISTS " + DB_TABLE_CAL + " ;";
+
+    private String DATABASE_CREATE_PROFILE=  "CREATE TABLE " + DB_TABLE_PROFILE +
+            " (" +
+            PROF_COL_PK + " INTEGER PRIMARY KEY , " +
+            PROF_COL_BMR + " FLOAT DEFAULT 2000 ); " ;
 
     private String DATABASE_CREATE_CAL=  "CREATE TABLE " + DB_TABLE_CAL +
             " (" +
@@ -69,6 +79,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
+        db.execSQL(DATABASE_CREATE_PROFILE);
         db.execSQL(DATABASE_CREATE_CAL);
         db.execSQL(DATABASE_CREATE_PROD);
     }
@@ -76,8 +87,10 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+        db.execSQL(DATABASE_DELETE_PROF);
         db.execSQL(DATABASE_DELETE_CAL);
         db.execSQL(DATABASE_DELETE_PROD);
+        db.execSQL(DATABASE_CREATE_PROFILE);
         db.execSQL(DATABASE_CREATE_CAL);
         db.execSQL(DATABASE_CREATE_PROD);
 

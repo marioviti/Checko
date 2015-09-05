@@ -196,7 +196,7 @@ public class CalendarFragment extends ListFragment implements View.OnClickListen
             View row = convertView;
 
             if( size<data.length && data[size]!=null) {
-                Log.d("asdadasdas",size+ "   " +data.length+ "  " + viewRows );
+
                 row = li.inflate(layoutResourceId, parent, false);
                 TextView day = (TextView) row.findViewById(R.id.row_textView);
                 CalendarEntry entryDay = data[size];

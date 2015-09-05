@@ -99,16 +99,15 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
             tvCARB.setText(values[0] + "gr");
             tvPROT.setText(values[1] + "gr");
             tvFAT.setText(values[2] + "gr");
-            tvCAL.setText(values[3] + "kcal");
+            tvCAL.setText(values[3] + "/"+Math.ceil(SupporHolder.BMR)+" kcal");
             tvIndicator.setText(Math.ceil(percent * 100) + "%");
-
             ha = new HistogramAnimation(hv,values);
             ha.setDuration(1500);
         }
         else {
+
             tv.setText("Starts Today");
         }
-
         c.setAngle(0);
         ca = new CircularIndicatorAnimation(c,percent*360);
         ca.setDuration(1500);

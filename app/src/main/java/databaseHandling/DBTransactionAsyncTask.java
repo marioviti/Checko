@@ -231,12 +231,39 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
         SupporHolder.currentCacheDayID = 0;
     }
 
+    private void createProfile(SQLiteDatabase wDb , ContentValues values) {
+        values.put(DBOpenHelper.PROF_COL_PK,1);
+        values.put(DBOpenHelper.PROF_COL_BMR,SupporHolder.BMR);
+        wDb.insert(DBOpenHelper.DB_TABLE_PROFILE, null, values);
+    }
+
+    private void updateProfile(SQLiteDatabase wDb , ContentValues values) {
+        values.put(DBOpenHelper.PROF_COL_PK,1);
+        values.put(DBOpenHelper.PROF_COL_BMR,SupporHolder.BMR);
+        wDb.update(DBOpenHelper.DB_TABLE_PROFILE, values, null, null);
+    }
+
+    private void profileUpdate(SQLiteDatabase rDb) {
+        String query = "SELECT * FROM "+DBOpenHelper.DB_TABLE_PROFILE+ ";";
+        Cursor cursor = rDb.rawQuery(query,null);
+        if(cursor.getCount()>0) {
+            cursor.moveToFirst();
+            SupporHolder.BMR = cursor.getFloat(cursor.getColumnIndex(DBOpenHelper.PROF_COL_BMR));
+        }
+        else {
+            ContentValues values = new ContentValues();
+            values.put(DBOpenHelper.PROF_COL_PK,1);
+            values.put(DBOpenHelper.PROF_COL_BMR,SupporHolder.BMR);
+            createProfile(myOpenHelper.getWritableDatabase(), values);
+        }
+    }
+
     @Override
     protected Object doInBackground(ContentValues... params) {
         // FSA
         switch (task) {
 
-            case DBQueryManager.INSERT : {
+            case DBQueryManager.INSERT: {
 
                 SQLiteDatabase db = myOpenHelper.getWritableDatabase();
                 if(!checkCurrentDay()) {
@@ -251,29 +278,42 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
                 break;
             }
 
-            case DBQueryManager.REFRESH_FETCH_SYNC : {
+            case DBQueryManager.REFRESH_FETCH_SYNC: {
 
-                if(SupporHolder.latestDayID==-1)
+                SQLiteDatabase db = myOpenHelper.getReadableDatabase();
+                if(SupporHolder.latestDayID==-1) {
                     checkCurrentDay();
+                    profileUpdate(db);
+                }
                 // uso dell'effetto collaterale
                 if(SupporHolder.latestDayID!=-1) {
-                    SQLiteDatabase db = myOpenHelper.getReadableDatabase();
+                    profileUpdate(db);
                     createCalendar(db);
                 } else {
                     firstLaunc();
                 }
+                //profileUpdate(db);
+
+                break;
+            }
+
+            case DBQueryManager.PROFILE: {
+
+                SQLiteDatabase db = myOpenHelper.getWritableDatabase();
+                updateProfile( db, params[0]) ;
+
                 break;
             }
         }
-
         return null;
     }
 
     @Override
     protected void onPostExecute(Object result) {
 
-        //show(DBOpenHelper.DB_TABLE_CAL);
+        show(DBOpenHelper.DB_TABLE_PROFILE);
         //show(DBOpenHelper.DB_TABLE_PROD);
+        if(task!=DBQueryManager.PROFILE)
         caller.manageQueryRes(result, task);
     }
 }

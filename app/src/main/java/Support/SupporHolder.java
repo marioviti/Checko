@@ -33,4 +33,6 @@ public class SupporHolder {
 
     public static int currentPage = MENU_FRAG;
 
+    public static float BMR = 2010;
+
 }
