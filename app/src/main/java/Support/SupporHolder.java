@@ -35,4 +35,25 @@ public class SupporHolder {
 
     public static float BMR = 2010;
 
+    public static boolean firstAccess() {
+        return SupporHolder.latestDayID==-1;
+    }
+
+    public static String toStaticString() {
+        String calendarCacheString = "";
+
+        for (int i= 0; i<calendarCache.length; i++) {
+            calendarCacheString = calendarCacheString + calendarCache[i].toString();
+        }
+
+        return  "latestDay " + latestDay + "\n" +
+                "latestDayID " + latestDayID + "\n" +
+                "currentDay " + currentDay + "\n" +
+                "currentDayID " + currentDayID + "\n" +
+                "currentCacheDayID "+ currentCacheDayID + "\n" +
+                "lastCacheDayID "+ lastCacheDayID + "\n" +
+                "lastCacheDayID "+ lastCacheDayID + "\n\n" +
+                calendarCacheString;
+    }
+
 }

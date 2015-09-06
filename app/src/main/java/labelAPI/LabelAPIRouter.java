@@ -186,21 +186,23 @@ public class LabelAPIRouter implements HttpResManager, DBQueryManager {
     @Override
     public void manageQueryRes(Object res, int task) {
 
-        if(task == DBQueryManager.INSERT || task == DBQueryManager.NEW_DATE) {
-            caller.onRefreshedData(SupporHolder.globalTypeVariable, task);
-            if(SupporHolder.latestDayID==-1)
-                caller.onFirstAccess();
-        }
+        switch(task) {
+            case DBQueryManager.PROFILE : {
+                caller.onRefreshedData(SupporHolder.globalTypeVariable, task);
+                break;
+            }
+            case DBQueryManager.REFRESH_FETCH_SYNC : {
 
-        if(task == DBQueryManager.PROFILE) {
-            caller.onRefreshedData(SupporHolder.globalTypeVariable, task);
-        }
-
-        if(task == DBQueryManager.REFRESH_FETCH_SYNC) {
-            //Signal upper UI using the LabelAPIServiceCallbacks
-            caller.onSync();
-            if(SupporHolder.latestDayID==-1)
-                caller.onFirstAccess();
+                caller.onSync();
+                if(SupporHolder.firstAccess())
+                    caller.onFirstAccess();
+                break;
+            }
+            default: {
+                caller.onRefreshedData(SupporHolder.globalTypeVariable, task);
+                if(SupporHolder.firstAccess())
+                    caller.onFirstAccess();
+            }
         }
     }
 

@@ -12,7 +12,7 @@ import android.util.Log;
 public class DBOpenHelper extends SQLiteOpenHelper {
 
     public static final String DB_NAME = "LabelApiDatabaseV1.db";
-    public static int DB_V = 29;
+    public static int DB_V = 31;
 
     public static final String DB_TABLE_PROFILE = "profile";
     public static final String PROF_COL_PK = "p_id";

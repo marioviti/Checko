@@ -56,6 +56,7 @@ public class RootFragment extends Fragment {
         return v;
     }
 
+
     public static RootFragment newInstance(String page, int pos) {
 
         Bundle args = new Bundle();

@@ -201,7 +201,6 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
 
             cursor = rDb.rawQuery(query, null);
             while (cursor.moveToNext()) {
-                Log.d("CreateSummary","\n"+cursor.getInt(5));
                 fillSummaryValues(cursor, i, cursor.getInt(4));
             }
             //Log.d("CreateSummary",""+SupporHolder.calendarCache[i].toString());
@@ -274,7 +273,6 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
                 updateDate(db, params[0].getAsInteger(DBOpenHelper.PROD_COL_TYPE));
                 SQLiteDatabase rdb = myOpenHelper.getReadableDatabase();
                 createCalendar(rdb);
-
                 break;
             }
 
@@ -292,8 +290,6 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
                 } else {
                     firstLaunc();
                 }
-                //profileUpdate(db);
-
                 break;
             }
 
@@ -301,7 +297,6 @@ public class DBTransactionAsyncTask extends AsyncTask<ContentValues, String, Obj
 
                 SQLiteDatabase db = myOpenHelper.getWritableDatabase();
                 updateProfile( db, params[0]) ;
-
                 break;
             }
         }

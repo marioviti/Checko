@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
      * usato per il refresh delle date
      */
     public void sync() {
+
         CalendarFragment.clearCalendar();
         labelAPIroute.sync();
     }
@@ -139,6 +140,40 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+
+        super.onRestoreInstanceState(savedInstanceState);
+
+        SupporHolder.latestDay = savedInstanceState.getString("latestDay");
+        SupporHolder.latestDayID = savedInstanceState.getInt("latestDateID");
+        SupporHolder.currentDay = savedInstanceState.getString("currentDay");
+        SupporHolder.currentDayID = savedInstanceState.getInt("currentDayID");
+        SupporHolder.currentCacheDayID = savedInstanceState.getInt("currentCacheDayID");
+        SupporHolder.lastCacheDayID = savedInstanceState.getInt("lastCacheDayID");
+        SupporHolder.currentPage = savedInstanceState.getInt("currentPage");
+
+        Log.d("onRestoreInstanceState","---------------------------MAIN_ACTIVITY");
+
+        //labelAPIroute.sync();
+    }
+
+    @Override
+    protected void onStop() {
+
+        super.onStop();
+        SupporHolder.currentPage = viewPager.getCurrentItem();
+        Log.d("onStop", "---------------------------MAIN_ACTIVITY");
+    }
+
+    @Override
+    protected void onRestart() {
+
+        super.onRestart();
+        Log.d("onRestart", "---------------------------MAIN_ACTIVITY");
+        //labelAPIroute.sync();
+    }
+
+    @Override
     protected void onSaveInstanceState (Bundle savedInstanceState) {
 
         super.onSaveInstanceState(savedInstanceState);
@@ -149,9 +184,9 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         savedInstanceState.putInt("currentDayID", SupporHolder.currentDayID);
         savedInstanceState.putInt("currentCacheDayID", SupporHolder.currentCacheDayID);
         savedInstanceState.putInt("lastCacheDayID", SupporHolder.lastCacheDayID);
-        savedInstanceState.putInt("currentPage", SupporHolder.currentPage);
+        savedInstanceState.putInt("currentPage", viewPager.getCurrentItem());
 
-        //Log.d("onSaveInstanceState", "---------------------------MAIN_ACTIVITY");
+        Log.d("onSaveInstanceState", "---------------------------MAIN_ACTIVITY");
     }
 
     @Override
@@ -202,6 +237,8 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
             String scanContent = scanningResult.getContents();
             String scanFormat = scanningResult.getFormatName();
             String GTIN = scanContent;
+            if (!labelAPIroute.hasSessionStarted())
+                labelAPIroute.startHttpTask(LabelAPIHolder.SESSION_CREATE_REQ);
             labelAPIroute.createSessionArrayURL(GTIN);
             labelAPIroute.startHttpTask(LabelAPIHolder.SESSION_ARRAY_REQ);
         }
@@ -240,6 +277,9 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
 
         switch (v.getId()) {
             case(R.id.dialog_button): {
+
+                if (!labelAPIroute.hasSessionStarted())
+                    labelAPIroute.startHttpTask(LabelAPIHolder.SESSION_CREATE_REQ);
 
                 String GTIN = ((EditText) this.mainDialog.findViewById(R.id.dialog_editText)).getText().toString();
                 labelAPIroute.createSessionArrayURL(GTIN);
@@ -303,21 +343,22 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
     public void onRefreshedData(int pos, int task) {
 
         if(pos!=-1) {
-            if(task== DBQueryManager.NEW_DATE) {
-
-                SupporHolder.currentPage=SupporHolder.CALEDAR_FRAG;
-                updateUI();
+            switch(task) {
+                case DBQueryManager.NEW_DATE : {
+                    SupporHolder.currentPage=SupporHolder.CALEDAR_FRAG;
+                    updateUI();
+                    break;
+                }
+                case DBQueryManager.PROFILE: {
+                    RootFragment.swapInnerFragmentWith(0, false);
+                    break;
+                }
+                default: {
+                    RootFragment.swapInnerFragmentWith(pos, false);
+                    CalendarFragment.updateDayEntry(SupporHolder.currentCacheDayID);
+                }
             }
-            else if(task == DBQueryManager.PROFILE) {
 
-                RootFragment.swapInnerFragmentWith(pos, false);
-
-            }else {
-
-                RootFragment.swapInnerFragmentWith(pos, false);
-                CalendarFragment.updateDayEntry(SupporHolder.currentCacheDayID);
-
-            }
         }
     }
 

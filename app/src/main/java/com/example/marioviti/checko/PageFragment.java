@@ -91,7 +91,7 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         hv.setValues(new float[] {5,5,5,5});
         float percent = 0;
         float[] values = null;
-        if(SupporHolder.currentCacheDayID!=-1) {
+        if(SupporHolder.currentCacheDayID!=-1 && SupporHolder.calendarCache[SupporHolder.currentCacheDayID]!=null) {
 
             values = SupporHolder.calendarCache[SupporHolder.currentCacheDayID].summaries[pos];
             percent = getPercent(SupporHolder.calendarCache[SupporHolder.currentCacheDayID].values);
@@ -103,6 +103,7 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
             tvIndicator.setText(Math.ceil(percent * 100) + "%");
             ha = new HistogramAnimation(hv,values);
             ha.setDuration(1500);
+
         }
         else {
 
