@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/material_blue_grey_800"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id = "@+id/page_layout"
-    android:background="@color/material_blue_grey_800"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:weightSum="1">
 
     <TextView android:id="@+id/tvLabel"
@@ -132,8 +137,15 @@
         android:layout_alignEnd="@+id/circular_indicator" />
 
     <ImageView
+        android:layout_marginTop="35dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/page_histogram"
+        android:id="@+id/page_image_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="@drawable/type1" />
 
 
 </RelativeLayout>
+
+</ScrollView>

@@ -79,6 +79,9 @@ public class CustomImageButton extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawRect(0,0,dimensionsW,dimensionsH,paint);
-        canvas.drawBitmap(this.image,0+dimensionsW/(float)2,0+dimensionsH/(float)2,null);
+        canvas.drawBitmap(this.image,
+                0+(dimensionsW/(float)2)-(this.image.getWidth()/(float)2),
+                0+(dimensionsH/(float)2)-(this.image.getHeight()/(float)2) ,
+                null);
     }
 }

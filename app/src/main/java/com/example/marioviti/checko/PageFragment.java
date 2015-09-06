@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -46,30 +47,6 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
         if(v==null) {
 
             v = li.inflate(R.layout.page_fragment0, container, false);
-
-            switch (pos) {
-                case 0: {
-                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type1));
-                    break;
-                }
-                case 1: {
-                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type2));
-                    break;
-                }
-                case 2: {
-                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type3));
-                    break;
-                }
-                case 3: {
-                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type4));
-                    break;
-                }
-                case 4: {
-                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type5));
-                    break;
-                }
-            }
-
             tvCARB = (TextView) v.findViewById(R.id.text_CARB);
             tvPROT = (TextView) v.findViewById(R.id.text_PROT);
             tvFAT = (TextView) v.findViewById(R.id.text_FAT);
@@ -78,6 +55,36 @@ public class PageFragment extends Fragment implements Animation.AnimationListene
             tvIndicator = (TextView) v.findViewById(R.id.indicator_textView);
             hv = (HistogramView) v.findViewById(R.id.page_histogram);
             c = (CircularIndicator) v.findViewById(R.id.circular_indicator);
+            ImageView icon = (ImageView) v.findViewById(R.id.page_image_view);
+
+
+            switch (pos) {
+                case 0: {
+                    icon.setBackground(getResources().getDrawable(R.drawable.type0));
+                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type1));
+                    break;
+                }
+                case 1: {
+                    icon.setBackground(getResources().getDrawable(R.drawable.type1));
+                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type2));
+                    break;
+                }
+                case 2: {
+                    icon.setBackground(getResources().getDrawable(R.drawable.type2));
+                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type3));
+                    break;
+                }
+                case 3: {
+                    icon.setBackground(getResources().getDrawable(R.drawable.type3));
+                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type4));
+                    break;
+                }
+                case 4: {
+                    icon.setBackground(getResources().getDrawable(R.drawable.type4));
+                    v.setBackgroundColor(getResources().getColor(R.color.btn_color_type5));
+                    break;
+                }
+            }
 
         }
         updateUI();
