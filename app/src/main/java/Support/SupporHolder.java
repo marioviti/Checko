@@ -32,6 +32,7 @@ public class SupporHolder {
     public static int frameWidth;
 
     public static int currentPage = MENU_FRAG;
+    public static int currentSummary = 0;
 
     public static float BMR = 2010;
 

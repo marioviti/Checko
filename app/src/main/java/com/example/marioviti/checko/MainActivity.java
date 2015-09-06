@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
             DisplayMetrics metrics = getResources().getDisplayMetrics();
             SupporHolder.frameHeight = (int)Math.ceil(metrics.heightPixels/metrics.scaledDensity);
             SupporHolder.frameWidth = (int)Math.ceil(metrics.widthPixels/metrics.scaledDensity);
-            Log.d("metrics","height="+SupporHolder.frameHeight +"\n"+"width="+SupporHolder.frameWidth);
+            Log.d("metrics", "height=" + SupporHolder.frameHeight + "\n" + "width=" + SupporHolder.frameWidth);
 
             //Log.d("onCreate", "---------------------------FIRST ACCESS METRICS: " + metrics.toString());
 
@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
             SupporHolder.currentCacheDayID = savedInstanceState.getInt("currentCacheDayID");
             SupporHolder.lastCacheDayID = savedInstanceState.getInt("lastCacheDayID");
             SupporHolder.currentPage = savedInstanceState.getInt("currentPage");
+            SupporHolder.currentSummary = savedInstanceState.getInt("currentSummary");
         }
 
         labelAPIroute.sync(); /** updateUI() viene chiamato come callback dopo il labelAPIroute.sync() */
@@ -121,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         pagerAdapter = new MyFragmentPagerAdapter(fm,PAG_NUM);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOffscreenPageLimit(PAG_NUM);
+        swapWith(SupporHolder.currentSummary, false);
         viewPager.setCurrentItem(SupporHolder.currentPage, false);
     }
 
@@ -151,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         SupporHolder.currentCacheDayID = savedInstanceState.getInt("currentCacheDayID");
         SupporHolder.lastCacheDayID = savedInstanceState.getInt("lastCacheDayID");
         SupporHolder.currentPage = savedInstanceState.getInt("currentPage");
+        SupporHolder.currentSummary = savedInstanceState.getInt("currentSummary");
 
         Log.d("onRestoreInstanceState","---------------------------MAIN_ACTIVITY");
 
@@ -185,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements FragmentSwapper, 
         savedInstanceState.putInt("currentCacheDayID", SupporHolder.currentCacheDayID);
         savedInstanceState.putInt("lastCacheDayID", SupporHolder.lastCacheDayID);
         savedInstanceState.putInt("currentPage", viewPager.getCurrentItem());
+        savedInstanceState.putInt("currentSummary", RootFragment.fgtPool.getCurr());
 
         Log.d("onSaveInstanceState", "---------------------------MAIN_ACTIVITY");
     }

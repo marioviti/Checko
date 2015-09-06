@@ -23,7 +23,7 @@ import Support.SupporHolder;
 
 public class RootFragment extends Fragment {
 
-    private static FragmentPool fgtPool;
+    public static FragmentPool fgtPool;
     private static int PAG_NUM = 5;
     private static FragmentManager fm;
     private static FragmentActivity myContext;
@@ -49,8 +49,8 @@ public class RootFragment extends Fragment {
         initiatePool();
         // hack: per evitare che il primo fragment non sia riconosciuto come quello corrente
         // setto quello corrente a 1 != 0 in modo che venga settato
-        this.fgtPool.setCurr(1);
-        this.swapInnerFragmentWith(0, false);
+        //this.fgtPool.setCurr(1);
+        //this.swapInnerFragmentWith(0, false);
 
         //Log.d("onCreateView", "---------------------------ROOT_FRAGMENT");
         return v;
